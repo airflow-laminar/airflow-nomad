@@ -138,3 +138,10 @@ section-order = [
     "F401",
     "F403",
 ]
+
+[tool.yardang]
+title = "airflow-nomad"
+root = "README.md"
+pages = []
+use-autoapi = true
+
