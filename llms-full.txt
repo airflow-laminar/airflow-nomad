@@ -1,0 +1,451 @@
+# index.html.md
+
+# airflow-nomad
+
+Run and monitor Nomad-managed jobs from Apache Airflow.
+
+[![Build Status](https://github.com/airflow-laminar/airflow-nomad/actions/workflows/build.yaml/badge.svg?branch=main&event=push)](https://github.com/airflow-laminar/airflow-nomad/actions/workflows/build.yaml)
+[![codecov](https://codecov.io/gh/airflow-laminar/airflow-nomad/branch/main/graph/badge.svg)](https://codecov.io/gh/airflow-laminar/airflow-nomad)
+[![License](https://img.shields.io/github/license/airflow-laminar/airflow-nomad)](https://github.com/airflow-laminar/airflow-nomad)
+[![PyPI](https://img.shields.io/pypi/v/airflow-nomad.svg)](https://pypi.python.org/pypi/airflow-nomad)
+
+```python
+from airflow import DAG
+from airflow_nomad import Job, Nomad, NomadAirflowConfiguration, Task, TaskGroup
+
+dag = DAG(dag_id="nightly-nomad", schedule="@daily")
+config = NomadAirflowConfiguration(
+    job=Job(
+        id="nightly",
+        type="batch",
+        task_groups=[
+            TaskGroup(
+                name="nightly",
+                tasks=[Task(name="nightly", driver="exec", config={"command": "/opt/jobs/nightly"})],
+            )
+        ],
+    )
+)
+Nomad(dag=dag, cfg=config)
+```
+
+The generated task lifecycle writes and registers the jobspec, monitors current
+allocations with `airflow-ha`, handles retriggers, stops the job, and optionally
+removes the generated configuration.
+
+## Documentation
+
+- [Tutorial: run a Nomad job from Airflow](docs/src/tutorial.md)
+- [How-to guides](docs/src/how-to.md)
+- [Why Airflow owns the lifecycle](docs/src/explanation.md)
+- [API reference](docs/src/api.md)
+
+Published documentation is available at
+[airflow-laminar.github.io/airflow-nomad](https://airflow-laminar.github.io/airflow-nomad/).
+
+## Ecosystem
+
+- [nomad-pydantic](https://github.com/airflow-laminar/nomad-pydantic) supplies jobspec models and the Nomad CLI client.
+- [supervisor-pydantic](https://github.com/airflow-laminar/supervisor-pydantic), [systemd-pydantic](https://github.com/airflow-laminar/systemd-pydantic), and [cron-pydantic](https://github.com/airflow-laminar/cron-pydantic) model alternative runtimes.
+- [airflow-supervisor](https://github.com/airflow-laminar/airflow-supervisor) and [airflow-systemd](https://github.com/airflow-laminar/airflow-systemd) provide analogous long-running job lifecycles.
+- [airflow-cron](https://github.com/airflow-laminar/airflow-cron) converts cron jobs into ordinary Airflow tasks.
+- [airflow-pydantic](https://github.com/airflow-laminar/airflow-pydantic) supplies declarative task and connection models.
+- [airflow-config](https://github.com/airflow-laminar/airflow-config) produces YAML-driven DAGs.
+
+#### NOTE
+This library was generated using [copier](https://copier.readthedocs.io/en/stable/) from the [Base Python Project Template repository](https://github.com/python-project-templates/base).
+
+
+# airflow_nomad.Nomad.html.md
+
+# airflow_nomad.Nomad
+
+### *class* airflow_nomad.Nomad(dag: DAG, cfg: [NomadAirflowConfiguration](airflow_nomad.NomadAirflowConfiguration.md#airflow_nomad.NomadAirflowConfiguration) | dict[str, Any], \*\*kwargs: Any)
+
+Bases: `object`
+
+Airflow task group for a Nomad-managed job.
+
+#### \_\_init_\_(dag: DAG, cfg: [NomadAirflowConfiguration](airflow_nomad.NomadAirflowConfiguration.md#airflow_nomad.NomadAirflowConfiguration) | dict[str, Any], \*\*kwargs: Any)
+
+### Methods
+
+| [`__init__`](#airflow_nomad.Nomad.__init__)(dag, cfg, \*\*kwargs)   |    |
+|---------------------------------------------------------------------|----|
+| `get_base_operator_kwargs`()                                        |    |
+| `get_step_kwargs`(step)                                             |    |
+| `get_step_operator`(step)                                           |    |
+| `initialize_tasks`()                                                |    |
+| `set_downstream`(other)                                             |    |
+| `set_upstream`(other)                                               |    |
+| `setup_dag`()                                                       |    |
+| `update_relative`(other[, upstream, edge_modifier])                 |    |
+
+### Attributes
+
+| `check_job`       |    |
+|-------------------|----|
+| `cleanup_nomad`   |    |
+| `configure_nomad` |    |
+| `leaves`          |    |
+| `nomad_client`    |    |
+| `register_job`    |    |
+| `restart_job`     |    |
+| `roots`           |    |
+| `stop_job`        |    |
+
+
+# airflow_nomad.NomadAirflowConfiguration.html.md
+
+# airflow_nomad.NomadAirflowConfiguration
+
+### *pydantic model* airflow_nomad.NomadAirflowConfiguration
+
+Bases: `NomadConfiguration`
+
+Nomad configuration for an Airflow-managed job.
+
+#### *field* check_interval *: timedelta* *= datetime.timedelta(seconds=5)*
+
+Interval between Nomad status checks
+
+#### *field* check_timeout *: timedelta* *= datetime.timedelta(seconds=28800)*
+
+Timeout for Nomad status checks
+
+#### *field* runtime *: timedelta | None* *= None*
+
+Maximum runtime of the Nomad job
+
+#### *field* endtime *: time | None* *= None*
+
+End time of the Nomad job
+
+#### *field* maxretrigger *: int | None* *= None*
+
+Maximum number of status check retriggers
+
+#### *field* reference_date *: Literal['start_date', 'logical_date', 'data_interval_end']* *= 'data_interval_end'*
+
+Date used to evaluate runtime and endtime
+
+#### *field* pool *: str | Pool | None* *= None*
+
+Airflow pool for Nomad tasks
+
+#### *field* stop_on_exit *: bool* *= True*
+
+Stop the Nomad job when the DAG finishes
+
+#### *field* cleanup *: bool* *= True*
+
+Remove the generated jobspec when the DAG finishes
+
+#### *field* purge_on_exit *: bool* *= False*
+
+Purge Nomad job history when stopping the job
+
+#### *field* restart_on_initial *: bool* *= False*
+
+Restart allocations on an initial Airflow run
+
+#### *field* restart_on_retrigger *: bool* *= False*
+
+Restart allocations when airflow-ha retriggers the job
+
+#### nomad_json() → str
+
+Serialize only fields understood by nomad-pydantic.
+
+
+# airflow_nomad.NomadOperator.html.md
+
+# airflow_nomad.NomadOperator
+
+### airflow_nomad.NomadOperator
+
+alias of [`NomadTask`](airflow_nomad.NomadTask.md#airflow_nomad.NomadTask)
+
+
+# airflow_nomad.NomadOperatorArgs.html.md
+
+# airflow_nomad.NomadOperatorArgs
+
+### airflow_nomad.NomadOperatorArgs
+
+alias of [`NomadTaskArgs`](airflow_nomad.NomadTaskArgs.md#airflow_nomad.NomadTaskArgs)
+
+
+# airflow_nomad.NomadTask.html.md
+
+# airflow_nomad.NomadTask
+
+### *pydantic model* airflow_nomad.NomadTask
+
+Bases: `Task`, [`NomadTaskArgs`](airflow_nomad.NomadTaskArgs.md#airflow_nomad.NomadTaskArgs)
+
+#### *field* operator *: Annotated[type, BeforeValidator(func=get_import_path, json_schema_input_type=PydanticUndefined), PlainSerializer(func=serialize_path_as_string, return_type=str, when_used=json)]* *= 'airflow_nomad.Nomad'*
+
+
+# airflow_nomad.NomadTaskArgs.html.md
+
+# airflow_nomad.NomadTaskArgs
+
+### *pydantic model* airflow_nomad.NomadTaskArgs
+
+Bases: `TaskArgs`
+
+#### *field* cfg *: [NomadAirflowConfiguration](airflow_nomad.NomadAirflowConfiguration.md#airflow_nomad.NomadAirflowConfiguration)* *[Required]*
+
+
+# airflow_nomad.load_airflow_config.html.md
+
+# airflow_nomad.load_airflow_config
+
+### airflow_nomad.load_airflow_config(config_dir: str | Path, config_name: str, , overrides: list[str] | None = None, \*\*values: Any) → NomadConfiguration
+
+Compose a Hydra YAML configuration and validate it.
+
+
+# api.html.md
+
+# API reference
+
+The public integration API is re-exported from `airflow_nomad`. Jobspec models
+are re-exported from `nomad_pydantic` and documented in its
+[API reference](https://airflow-laminar.github.io/nomad-pydantic/docs/src/api.html).
+
+## Airflow configuration and tasks
+
+| [`NomadAirflowConfiguration`](_build/airflow_nomad.NomadAirflowConfiguration.md#airflow_nomad.NomadAirflowConfiguration)            | Nomad configuration for an Airflow-managed job.                                               |
+|-------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| [`NomadTaskArgs`](_build/airflow_nomad.NomadTaskArgs.md#airflow_nomad.NomadTaskArgs)                                                |                                                                                               |
+| [`NomadTask`](_build/airflow_nomad.NomadTask.md#airflow_nomad.NomadTask)                                                            |                                                                                               |
+| [`NomadOperatorArgs`](_build/airflow_nomad.NomadOperatorArgs.md#airflow_nomad.NomadOperatorArgs)                                    | alias of [`NomadTaskArgs`](_build/airflow_nomad.NomadTaskArgs.md#airflow_nomad.NomadTaskArgs) |
+| [`NomadOperator`](_build/airflow_nomad.NomadOperator.md#airflow_nomad.NomadOperator)                                                | alias of [`NomadTask`](_build/airflow_nomad.NomadTask.md#airflow_nomad.NomadTask)             |
+| [`load_airflow_config`](_build/airflow_nomad.load_airflow_config.md#airflow_nomad.load_airflow_config)(config_dir, config_name, \*) | Compose a Hydra YAML configuration and validate it.                                           |
+
+## Runtime lifecycle
+
+| [`Nomad`](_build/airflow_nomad.Nomad.md#airflow_nomad.Nomad)(dag, cfg, \*\*kwargs)   | Airflow task group for a Nomad-managed job.   |
+|--------------------------------------------------------------------------------------|-----------------------------------------------|
+
+
+# explanation.html.md
+
+# Why Airflow owns the Nomad job lifecycle
+
+Airflow coordinates a workflow, while Nomad schedules and supervises the
+processes that perform one long-running step. `airflow-nomad` keeps those roles
+separate: Airflow determines when the work belongs in a DAG run; Nomad chooses
+nodes, starts allocations, applies resource limits, and records runtime state.
+
+## Lifecycle mapping
+
+The integration registers a Nomad jobspec and polls the status bundle returned
+by `nomad job status -json`. Successful terminal allocations stop monitoring.
+Pending or running allocations continue monitoring. Failed or lost current
+allocations enter the `airflow-ha` retrigger path.
+
+This mapping uses current job-version allocations rather than Nomad’s coarse
+job status. Nomad reports both successfully completed and failed batch jobs as
+`dead`; the allocation records preserve the distinction Airflow needs.
+
+## Why the integration uses the Nomad CLI
+
+`nomad-pydantic` renders the native JSON jobspec and delegates lifecycle calls
+to the Nomad CLI. This keeps address, namespace, TLS, and token handling aligned
+with an operator’s existing Nomad configuration. It also makes the client easy
+to replace with a fake command runner in tests.
+
+Unlike `airflow-systemd`, this integration does not need a separate SSH mode.
+The CLI already talks to a remote Nomad API, so workers only need network access
+and credentials for the target cluster.
+
+## Comparison with host process managers
+
+[airflow-supervisor](https://github.com/airflow-laminar/airflow-supervisor)
+creates a dedicated supervisord instance, while
+[airflow-systemd](https://github.com/airflow-laminar/airflow-systemd) uses a
+host’s service manager. `airflow-nomad` targets a cluster scheduler, making it a
+better fit when placement, multi-node capacity, resource isolation, and Nomad
+service integrations are already operational standards.
+
+
+# how-to.html.md
+
+# How-to guides
+
+These guides cover common lifecycle and deployment configurations.
+
+## How to keep a service running after the DAG finishes
+
+Disable stop and cleanup, then choose when to restart allocations:
+
+```yaml
+cfg:
+  stop_on_exit: false
+  cleanup: false
+  restart_on_initial: true
+  restart_on_retrigger: true
+  job:
+    id: api
+    type: service
+    task_groups:
+      - name: api
+        tasks:
+          - name: api
+            driver: docker
+            config:
+              image: example/api:latest
+```
+
+Use this configuration when Nomad should retain ownership of the service after
+the Airflow run ends.
+
+## How to limit monitoring
+
+Set Airflow-specific timing fields on `NomadAirflowConfiguration`:
+
+```yaml
+cfg:
+  check_interval: 00:00:10
+  check_timeout: 08:00:00
+  runtime: 04:00:00
+  maxretrigger: 3
+  job:
+    id: report
+    type: batch
+    task_groups:
+      - name: report
+        tasks:
+          - name: report
+            driver: exec
+            config:
+              command: /opt/jobs/report
+```
+
+`check_interval` controls polling, `check_timeout` controls the sensor timeout,
+and `runtime` controls the allowed external job duration.
+
+## How to select a Nomad cluster
+
+Set standard Nomad CLI environment variables on every Airflow worker that can
+run the lifecycle tasks:
+
+```bash
+export NOMAD_ADDR=https://nomad.example.com:4646
+export NOMAD_NAMESPACE=analytics
+export NOMAD_TOKEN=...
+```
+
+Set `job.namespace` in the jobspec when the namespace is part of the declarative
+configuration. The explicit job namespace takes precedence for job-scoped CLI
+operations.
+
+## How to purge job history
+
+Enable purge when the normal stop task runs:
+
+```yaml
+cfg:
+  stop_on_exit: true
+  purge_on_exit: true
+```
+
+The force-kill path always requests a purge.
+
+## How to chain the lifecycle with other tasks
+
+The `Nomad` object behaves like a task group boundary:
+
+```python
+prepare >> nomad >> publish
+```
+
+Upstream dependencies attach to `configure_nomad`. Downstream dependencies
+attach to `cleanup_nomad`, including when cleanup is represented by a skip task.
+
+
+# tutorial.html.md
+
+# Tutorial: run a Nomad job from Airflow
+
+In this tutorial, we will define a Nomad batch job in `airflow-config` YAML and
+load it as an Airflow DAG.
+
+## Install the packages
+
+For Airflow 3, run:
+
+```bash
+pip install 'airflow-nomad[airflow3]' airflow-config
+```
+
+Use the `airflow` extra when running Airflow 2. Every worker that can execute
+the generated tasks must have the Nomad CLI and cluster credentials.
+
+## Define the DAG
+
+Create `config/nomad.yaml`:
+
+```yaml
+dags:
+  nightly-nomad:
+    schedule: "@daily"
+    start_date: "2024-01-01"
+    catchup: false
+    tasks:
+      run-nightly:
+        _target_: airflow_nomad.NomadTask
+        cfg:
+          stop_on_exit: true
+          cleanup: true
+          job:
+            id: nightly
+            type: batch
+            namespace: analytics
+            datacenters:
+              - dc1
+            task_groups:
+              - name: nightly
+                tasks:
+                  - name: nightly
+                    driver: exec
+                    config:
+                      command: /opt/jobs/nightly
+                    resources:
+                      cpu: 500
+                      memory_mb: 256
+```
+
+## Load the configuration
+
+Create `nightly_nomad.py` in the DAG folder:
+
+```python
+from airflow_config import load_config
+
+config = load_config("config", "nomad")
+config.generate_in_mem()
+```
+
+## Inspect the lifecycle
+
+Parse the DAG folder:
+
+```bash
+airflow dags list | grep nightly-nomad
+airflow tasks list nightly-nomad
+```
+
+The task list includes configure, register, check, restart, stop, and cleanup
+steps created by `Nomad`.
+
+Trigger the DAG in a test environment connected to the Nomad cluster. The check
+step remains active while current allocations run and completes after Nomad
+reports successful terminal allocations.
+
+You have now connected a declarative Airflow DAG to a Nomad-managed batch job.
+
+

@@ -1,0 +1,6 @@
+﻿airflow\_nomad.NomadOperatorArgs
+================================
+
+.. currentmodule:: airflow_nomad
+
+.. autopydantic_model:: NomadOperatorArgs

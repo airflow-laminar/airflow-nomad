@@ -1,0 +1,6 @@
+﻿airflow\_nomad.load\_airflow\_config
+====================================
+
+.. currentmodule:: airflow_nomad
+
+.. autofunction:: load_airflow_config

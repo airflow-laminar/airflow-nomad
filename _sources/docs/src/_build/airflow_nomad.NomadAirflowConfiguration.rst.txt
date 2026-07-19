@@ -1,0 +1,6 @@
+﻿airflow\_nomad.NomadAirflowConfiguration
+========================================
+
+.. currentmodule:: airflow_nomad
+
+.. autopydantic_model:: NomadAirflowConfiguration

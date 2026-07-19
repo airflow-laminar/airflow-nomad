@@ -1,0 +1,6 @@
+﻿airflow\_nomad.NomadTaskArgs
+============================
+
+.. currentmodule:: airflow_nomad
+
+.. autopydantic_model:: NomadTaskArgs

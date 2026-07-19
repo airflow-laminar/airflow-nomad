@@ -1,22 +1,3 @@
-```{toctree}
----
-maxdepth: 2
-hidden: true
----
-
-
-
-docs/src/tutorial.md
-
-docs/src/how-to.md
-
-docs/src/explanation.md
-
-docs/src/api.md
-
-
-```
-
 # airflow-nomad
 
 Run and monitor Nomad-managed jobs from Apache Airflow.
@@ -69,5 +50,5 @@ Published documentation is available at
 - [airflow-pydantic](https://github.com/airflow-laminar/airflow-pydantic) supplies declarative task and connection models.
 - [airflow-config](https://github.com/airflow-laminar/airflow-config) produces YAML-driven DAGs.
 
-> [!NOTE]
-> This library was generated using [copier](https://copier.readthedocs.io/en/stable/) from the [Base Python Project Template repository](https://github.com/python-project-templates/base).
+#### NOTE
+This library was generated using [copier](https://copier.readthedocs.io/en/stable/) from the [Base Python Project Template repository](https://github.com/python-project-templates/base).

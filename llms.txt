@@ -1,0 +1,25 @@
+# airflow-nomad
+
+> Apache Airflow integration for Nomad-managed jobs
+
+
+the airflow-nomad authors
+
+## Pages
+
+- [airflow-nomad](index.html.md): Run and monitor Nomad-managed jobs from Apache Airflow.
+- [airflow_nomad.Nomad](docs/src/_build/airflow_nomad.Nomad.html.md): Bases: `object`
+- [airflow_nomad.NomadAirflowConfiguration](docs/src/_build/airflow_nomad.NomadAirflowConfiguration.html.md): Bases: `NomadConfiguration`
+- [airflow_nomad.NomadOperator](docs/src/_build/airflow_nomad.NomadOperator.html.md): alias of [`NomadTask`](airflow_nomad.NomadTask.md#airflow_nomad.NomadTask)
+- [airflow_nomad.NomadOperatorArgs](docs/src/_build/airflow_nomad.NomadOperatorArgs.html.md): alias of [`NomadTaskArgs`](airflow_nomad.NomadTaskArgs.md#airflow_nomad.NomadTaskArgs)
+- [airflow_nomad.NomadTask](docs/src/_build/airflow_nomad.NomadTask.html.md): Bases: `Task`, [`NomadTaskArgs`](airflow_nomad.NomadTaskArgs.md#airflow_nomad.NomadTaskArgs)
+- [airflow_nomad.NomadTaskArgs](docs/src/_build/airflow_nomad.NomadTaskArgs.html.md): Bases: `TaskArgs`
+- [airflow_nomad.load_airflow_config](docs/src/_build/airflow_nomad.load_airflow_config.html.md): Compose a Hydra YAML configuration and validate it.
+- [API reference](docs/src/api.html.md): The public integration API is re-exported from `airflow_nomad`. Jobspec models
+- [Why Airflow owns the Nomad job lifecycle](docs/src/explanation.html.md): Airflow coordinates a workflow, while Nomad schedules and supervises the
+- [How-to guides](docs/src/how-to.html.md): These guides cover common lifecycle and deployment configurations.
+- [Tutorial: run a Nomad job from Airflow](docs/src/tutorial.html.md): In this tutorial, we will define a Nomad batch job in `airflow-config` YAML and
+
+---
+
+For more comprehensive documentation, see [llms-full.txt](llms-full.txt)

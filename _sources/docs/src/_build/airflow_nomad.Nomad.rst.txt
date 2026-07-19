@@ -1,0 +1,44 @@
+﻿airflow\_nomad.Nomad
+====================
+
+.. currentmodule:: airflow_nomad
+
+.. autoclass:: Nomad
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Nomad.__init__
+      ~Nomad.get_base_operator_kwargs
+      ~Nomad.get_step_kwargs
+      ~Nomad.get_step_operator
+      ~Nomad.initialize_tasks
+      ~Nomad.set_downstream
+      ~Nomad.set_upstream
+      ~Nomad.setup_dag
+      ~Nomad.update_relative
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Nomad.check_job
+      ~Nomad.cleanup_nomad
+      ~Nomad.configure_nomad
+      ~Nomad.leaves
+      ~Nomad.nomad_client
+      ~Nomad.register_job
+      ~Nomad.restart_job
+      ~Nomad.roots
+      ~Nomad.stop_job
+   
+   
