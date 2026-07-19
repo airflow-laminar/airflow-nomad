@@ -28,7 +28,11 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
 ]
 
-dependencies = []
+dependencies = [
+    "airflow-ha>=1.6.2,<1.7",
+    "airflow-pydantic>=1.5.10,<1.6",
+    "nomad-pydantic>=0.1.1,<0.2",
+]
 
 [project.optional-dependencies]
 develop = [
@@ -46,6 +50,19 @@ develop = [
     "ty",
     "uv",
     "wheel",
+    "airflow-config>=1.11.1,<1.12",
+    "airflow-pydantic>=1.5.10,<1.6",
+    "nomad-pydantic>=0.1.1,<0.2",
+]
+airflow = [
+    "apache-airflow>=2.9,<3",
+    "apache-airflow-providers-ssh",
+    "apache-airflow-providers-standard",
+]
+airflow3 = [
+    "apache-airflow>=3,<3.2",
+    "apache-airflow-providers-ssh",
+    "apache-airflow-providers-standard",
 ]
 
 [project.scripts]
@@ -141,6 +158,18 @@ section-order = [
 [tool.yardang]
 title = "airflow-nomad"
 root = "README.md"
-pages = []
-use-autoapi = true
+theme = "sphinxawesome_theme"
+pages = [
+    "docs/src/tutorial.md",
+    "docs/src/how-to.md",
+    "docs/src/explanation.md",
+    "docs/src/api.md",
+]
+use-autoapi = false
 
+[tool.yardang.llms]
+enabled = true
+description = "Apache Airflow integration for Nomad-managed jobs"
+build-parallel = true
+suffix-mode = "auto"
+full-build = true
