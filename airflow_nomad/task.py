@@ -1,4 +1,4 @@
-from typing import Type, cast
+from typing import cast
 
 from airflow_pydantic import ImportPath, Task, TaskArgs
 from pydantic import Field, field_validator
@@ -20,7 +20,7 @@ class NomadTask(Task, NomadTaskArgs):
 
     @field_validator("operator")
     @classmethod
-    def validate_operator(cls, value: Type) -> Type:
+    def validate_operator(cls, value: type) -> type:
         from airflow_nomad.airflow import Nomad
 
         if value is not Nomad:
