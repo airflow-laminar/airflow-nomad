@@ -55,12 +55,12 @@ develop = [
     "nomad-pydantic>=0.1.1,<0.2",
 ]
 airflow = [
-    "apache-airflow>=2.9,<3",
+    "apache-airflow>=2.9,<4",
     "apache-airflow-providers-ssh",
     "apache-airflow-providers-standard",
 ]
 airflow3 = [
-    "apache-airflow>=3,<3.2",
+    "apache-airflow>=3,<3.4",
     "apache-airflow-providers-ssh",
     "apache-airflow-providers-standard",
 ]
