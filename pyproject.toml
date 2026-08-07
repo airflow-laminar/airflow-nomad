@@ -30,7 +30,7 @@ classifiers = [
 
 dependencies = [
     "airflow-ha>=1.6.2,<1.7",
-    "airflow-pydantic>=1.5.10,<1.6",
+    "airflow-pydantic>=1.6.1,<1.7",
     "nomad-pydantic>=0.1.1,<0.2",
 ]
 
@@ -50,8 +50,8 @@ develop = [
     "ty",
     "uv",
     "wheel",
-    "airflow-config>=1.11.1,<1.12",
-    "airflow-pydantic>=1.5.10,<1.6",
+    "airflow-config>=1.12,<1.13",
+    "airflow-pydantic>=1.6.1,<1.7",
     "nomad-pydantic>=0.1.1,<0.2",
 ]
 airflow = [
@@ -60,7 +60,7 @@ airflow = [
     "apache-airflow-providers-standard",
 ]
 airflow3 = [
-    "apache-airflow>=3,<3.2",
+    "apache-airflow>=3,<3.4",
     "apache-airflow-providers-ssh",
     "apache-airflow-providers-standard",
 ]
