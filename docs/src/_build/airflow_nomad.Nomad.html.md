@@ -1,12 +1,12 @@
 # airflow_nomad.Nomad
 
-### *class* airflow_nomad.Nomad(dag: DAG, cfg: [NomadAirflowConfiguration](airflow_nomad.NomadAirflowConfiguration.md#airflow_nomad.NomadAirflowConfiguration) | dict[str, Any], \*\*kwargs: Any)
+### *class* airflow_nomad.Nomad(dag: DAG, cfg: [NomadAirflowConfiguration](airflow_nomad.NomadAirflowConfiguration.html.md#airflow_nomad.NomadAirflowConfiguration) | dict[str, Any], \*\*kwargs: Any)[[source]](../../../_modules/airflow_nomad/airflow.html.md#Nomad)
 
 Bases: `object`
 
 Airflow task group for a Nomad-managed job.
 
-#### \_\_init_\_(dag: DAG, cfg: [NomadAirflowConfiguration](airflow_nomad.NomadAirflowConfiguration.md#airflow_nomad.NomadAirflowConfiguration) | dict[str, Any], \*\*kwargs: Any)
+#### \_\_init_\_(dag: DAG, cfg: [NomadAirflowConfiguration](airflow_nomad.NomadAirflowConfiguration.html.md#airflow_nomad.NomadAirflowConfiguration) | dict[str, Any], \*\*kwargs: Any)[[source]](../../../_modules/airflow_nomad/airflow.html.md#Nomad.__init__)
 
 ### Methods
 

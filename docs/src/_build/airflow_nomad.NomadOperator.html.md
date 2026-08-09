@@ -2,4 +2,4 @@
 
 ### airflow_nomad.NomadOperator
 
-alias of [`NomadTask`](airflow_nomad.NomadTask.md#airflow_nomad.NomadTask)
+alias of [`NomadTask`](airflow_nomad.NomadTask.html.md#airflow_nomad.NomadTask)

@@ -1,6 +1,6 @@
 # airflow_nomad.NomadAirflowConfiguration
 
-### *pydantic model* airflow_nomad.NomadAirflowConfiguration
+### *pydantic model* airflow_nomad.NomadAirflowConfiguration[[source]](../../../_modules/airflow_nomad/config.html.md#NomadAirflowConfiguration)
 
 Bases: `NomadConfiguration`
 
@@ -54,6 +54,6 @@ Restart allocations on an initial Airflow run
 
 Restart allocations when airflow-ha retriggers the job
 
-#### nomad_json() → str
+#### nomad_json() → str[[source]](../../../_modules/airflow_nomad/config.html.md#NomadAirflowConfiguration.nomad_json)
 
 Serialize only fields understood by nomad-pydantic.
