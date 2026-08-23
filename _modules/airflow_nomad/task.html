@@ -173,7 +173,7 @@
 </span><span id="line-5">
 </span><span id="line-6"><span class="kn">from</span><span class="w"> </span><span class="nn">airflow_nomad.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">NomadAirflowConfiguration</span>
 </span><span id="line-7">
-</span><span id="line-8"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;NomadOperator&quot;</span><span class="p">,</span> <span class="s2">&quot;NomadOperatorArgs&quot;</span><span class="p">,</span> <span class="s2">&quot;NomadTask&quot;</span><span class="p">,</span> <span class="s2">&quot;NomadTaskArgs&quot;</span><span class="p">)</span>
+</span><span id="line-8"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"NomadOperator"</span><span class="p">,</span> <span class="s2">"NomadOperatorArgs"</span><span class="p">,</span> <span class="s2">"NomadTask"</span><span class="p">,</span> <span class="s2">"NomadTaskArgs"</span><span class="p">)</span>
 </span><span id="line-9">
 </span><span id="line-10">
 <div class="viewcode-block" id="NomadTaskArgs">
@@ -189,15 +189,15 @@
 <div class="viewcode-block" id="NomadTask">
 <a class="viewcode-back" href="../../docs/src/_build/airflow_nomad.NomadTask.html#airflow_nomad.NomadTask">[docs]</a>
 </span><span id="line-18"><span class="k">class</span><span class="w"> </span><span class="nc">NomadTask</span><span class="p">(</span><span class="n">Task</span><span class="p">,</span> <span class="n">NomadTaskArgs</span><span class="p">):</span>
-</span><span id="line-19">    <span class="n">operator</span><span class="p">:</span> <span class="n">ImportPath</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">cast</span><span class="p">(</span><span class="n">ImportPath</span><span class="p">,</span> <span class="s2">&quot;airflow_nomad.Nomad&quot;</span><span class="p">),</span> <span class="n">validate_default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="line-19">    <span class="n">operator</span><span class="p">:</span> <span class="n">ImportPath</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">cast</span><span class="p">(</span><span class="n">ImportPath</span><span class="p">,</span> <span class="s2">"airflow_nomad.Nomad"</span><span class="p">),</span> <span class="n">validate_default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span><span id="line-20">
-</span><span id="line-21">    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;operator&quot;</span><span class="p">)</span>
+</span><span id="line-21">    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"operator"</span><span class="p">)</span>
 </span><span id="line-22">    <span class="nd">@classmethod</span>
 </span><span id="line-23">    <span class="k">def</span><span class="w"> </span><span class="nf">validate_operator</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
 </span><span id="line-24">        <span class="kn">from</span><span class="w"> </span><span class="nn">airflow_nomad.airflow</span><span class="w"> </span><span class="kn">import</span> <span class="n">Nomad</span>
 </span><span id="line-25">
 </span><span id="line-26">        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Nomad</span><span class="p">:</span>
-</span><span id="line-27">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;operator must be &#39;airflow_nomad.Nomad&#39;, got: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="line-27">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"operator must be 'airflow_nomad.Nomad', got: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </span><span id="line-28">        <span class="k">return</span> <span class="n">value</span></div>
 
 </span><span id="line-29">
