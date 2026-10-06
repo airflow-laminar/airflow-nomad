@@ -6,12 +6,13 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
 
 from airflow_pydantic import Pool, fail, skip
-from nomad_pydantic import CommandResult, JobStatus, NomadClient
+from nomad_pydantic import NomadClient
 
 from airflow_nomad.config import NomadAirflowConfiguration
 
 if TYPE_CHECKING:
     from airflow_ha import CheckResult, HighAvailabilityOperator
+    from nomad_pydantic import CommandResult, JobStatus
 
     DAG = Any
     Operator = Any
@@ -85,7 +86,7 @@ def _log_failure(status: JobStatus, log: Any) -> None:
         if allocation.client_status not in {"failed", "lost"}:
             continue
         log.error("Nomad allocation failed: id=%s group=%s status=%s", allocation.id, allocation.task_group, allocation.client_status)
-        for name, state in allocation.task_states.items():
+        for name, state in getattr(allocation, "task_states", {}).items():
             for event in state.events:
                 log.error(
                     "Nomad task event: allocation=%s task=%s state=%s type=%s exit_code=%s signal=%s message=%s",
