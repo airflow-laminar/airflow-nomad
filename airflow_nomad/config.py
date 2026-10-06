@@ -28,6 +28,8 @@ class NomadAirflowConfiguration(NomadConfiguration):
     purge_on_exit: bool = Field(default=False, description="Purge Nomad job history when stopping the job")
     restart_on_initial: bool = Field(default=False, description="Restart allocations on an initial Airflow run")
     restart_on_retrigger: bool = Field(default=False, description="Restart allocations when airflow-ha retriggers the job")
+    forward_logs: bool = Field(default=False, description="Forward Nomad task stdout and stderr into Airflow task logs")
+    log_chunk_size: int = Field(default=65536, gt=0, le=1048576, description="Maximum bytes read per allocation task stream on each check")
 
     def nomad_json(self) -> str:
         """Serialize only fields understood by nomad-pydantic."""

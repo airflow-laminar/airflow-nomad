@@ -165,7 +165,7 @@ def test_status_mapping(nomad_airflow_configuration: NomadAirflowConfiguration, 
     client.status.side_effect = [
         SimpleNamespace(complete=True, stopped=False, failed=False),
         SimpleNamespace(complete=False, stopped=True, failed=False),
-        SimpleNamespace(complete=False, stopped=False, failed=True),
+        SimpleNamespace(complete=False, stopped=False, failed=True, current_allocations=[]),
         SimpleNamespace(complete=False, stopped=False, failed=False),
     ]
 
