@@ -51,6 +51,9 @@ development cluster and check cleanup. For an existing cluster, follow the
 [`airflow-config` guide](docs/src/how-to.md#how-to-run-a-job-with-airflow-config).
 Both use the same cluster credentials and namespace settings.
 
+Use the [observability guide](docs/src/observability.md) to forward task logs,
+attach failure callbacks, or monitor a persistent job between management runs.
+
 The [API reference](docs/src/api.md) lists configuration defaults, monitoring
 settings, and task boundaries. [Why Airflow owns the lifecycle](docs/src/explanation.md)
 explains allocation state, persistent services, and scheduling ownership.

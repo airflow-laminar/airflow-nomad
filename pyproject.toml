@@ -29,9 +29,9 @@ classifiers = [
 ]
 
 dependencies = [
-    "airflow-ha>=1.6.2,<1.7",
-    "airflow-pydantic>=1.6.1,<1.7",
-    "nomad-pydantic>=0.1.1,<0.2",
+    "airflow-ha>=1.6.5,<1.7",
+    "airflow-pydantic>=1.7.0,<1.8",
+    "nomad-pydantic>=0.2.0,<0.3",
 ]
 
 [project.optional-dependencies]
@@ -52,8 +52,8 @@ develop = [
     "uv",
     "wheel",
     "airflow-config>=1.12,<1.13",
-    "airflow-pydantic>=1.6.1,<1.7",
-    "nomad-pydantic>=0.1.1,<0.2",
+    "airflow-pydantic>=1.7.0,<1.8",
+    "nomad-pydantic>=0.2.0,<0.3",
 ]
 airflow = [
     "apache-airflow>=2.9,<3",
