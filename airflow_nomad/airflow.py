@@ -233,8 +233,15 @@ class Nomad:
         return True
 
     def _flush_logs(self, context: dict[str, Any]) -> None:
-        if self._cfg.forward_logs:
-            self._forward_logs(self.nomad_client.status(), context, final=True)
+        if not self._cfg.forward_logs:
+            return
+        try:
+            status = self.nomad_client.status()
+        except (RuntimeError, OSError, ValueError, subprocess.SubprocessError) as error:
+            log = getattr(context.get("task", self.check_job), "log", logging.getLogger("airflow.task"))
+            log.warning("Cannot read Nomad status for final logs: %s", error)
+            return
+        self._forward_logs(status, context, final=True)
 
     def get_step_kwargs(self, step: Step) -> dict[str, Any]:
         cfg = self._cfg
@@ -359,7 +366,7 @@ def check_nomad_health(
     """Check an existing job once, requiring a running service by default.
 
     Use this callable in a scheduled PythonOperator to monitor persistent jobs.
-    Each invocation reads a bounded snapshot of retained logs when enabled.
+    Airflow task XComs retain byte cursors across scheduled health checks.
     """
     from airflow.exceptions import AirflowException
 
@@ -369,7 +376,14 @@ def check_nomad_health(
     status = client.status()
     log = getattr(context.get("task"), "log", logging.getLogger("airflow.task"))
     if cfg.forward_logs:
-        _forward_logs(cfg, client, status, log, {}, final=True)
+        ti = context.get("ti") or context.get("task_instance")
+        offsets = {}
+        if ti is not None:
+            task_id = getattr(context.get("task"), "task_id", None) or ti.task_id
+            offsets = ti.xcom_pull(task_ids=task_id, key="nomad_log_offsets", include_prior_dates=True) or {}
+        _forward_logs(cfg, client, status, log, offsets, final=True)
+        if ti is not None:
+            ti.xcom_push(key="nomad_log_offsets", value=offsets)
     _log_failure(status, log)
     failed_allocations = any(
         allocation.client_status in {"failed", "lost"} or any(state.failed for state in allocation.task_states.values())

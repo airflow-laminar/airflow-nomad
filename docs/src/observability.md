@@ -23,6 +23,11 @@ for final output. Each terminal drain reads at most sixteen chunks per stream.
 Permission or allocation-file read errors produce warnings and leave job
 health checks active.
 
+Log chunks can split lines. A UTF-8 character split across chunk boundaries
+can appear as replacement characters in forwarded text; byte cursors still
+advance by the original byte count. Keep the default chunk size unless you
+need a smaller read bound.
+
 Attach your existing alert callback when constructing the group:
 
 ```python
@@ -118,7 +123,10 @@ load_config("config", "nomad_health").generate_in_mem()
 The health callable checks the existing job without registering, restarting, or stopping
 it. A missing, stopped, failed, or completed persistent job fails the health
 task. Set `op_kwargs.require_running: false` if successfully completed batch
-jobs should pass. Each watchdog run reads a bounded snapshot of retained logs
-when forwarding is enabled, so successive runs can repeat output. A crash and
+jobs should pass. Watchdog tasks keep byte cursors in `nomad_log_offsets`
+XComs and read them from prior runs, including failed checks, to avoid replaying
+retained output. Keep XCom history for this health task to preserve those
+cursors. Direct calls without an Airflow task instance read a bounded snapshot
+of retained logs on each invocation. A crash and
 recovery entirely between checks may be missed; shorten the schedule to match
 your detection requirement.
