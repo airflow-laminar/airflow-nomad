@@ -2,6 +2,9 @@ import logging
 from unittest.mock import Mock
 
 import pytest
+
+pytest.importorskip("airflow")
+
 from airflow.exceptions import AirflowException
 from airflow_ha import Action, Result
 from nomad_pydantic import AllocationStatus, CommandResult, JobStatus, JobSummary, LogChunk
