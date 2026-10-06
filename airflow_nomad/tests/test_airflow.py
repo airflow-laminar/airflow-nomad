@@ -216,3 +216,13 @@ def test_chaining_helpers(nomad_airflow_configuration: NomadAirflowConfiguration
     assert nomad.update_relative(after, upstream=False) is nomad
     assert nomad.roots
     assert nomad.leaves
+
+
+def test_failed_status_without_task_states_still_retriggers(nomad_airflow_configuration: NomadAirflowConfiguration, client: Mock, caplog) -> None:
+    allocation = SimpleNamespace(id="older-sdk-allocation", task_group="job", client_status="failed")
+    client.status.return_value = SimpleNamespace(complete=False, stopped=False, failed=True, current_allocations=[allocation])
+    nomad = create_nomad(nomad_airflow_configuration, client)
+
+    assert nomad.get_step_kwargs("check-job")["python_callable"]() == (Result.FAIL, Action.RETRIGGER)
+    assert "older-sdk-allocation" in caplog.text
+    client.read_logs.assert_not_called()
