@@ -136,6 +136,10 @@ Logs are also drained before restart, stop, and purge; check those task logs
 for final output. Each terminal drain reads at most sixteen chunks per stream.
 Permission or allocation-file read errors produce warnings and leave job
 health checks active.</p>
+<p>Log chunks can split lines. A UTF-8 character split across chunk boundaries
+can appear as replacement characters in forwarded text; byte cursors still
+advance by the original byte count. Keep the default chunk size unless you
+need a smaller read bound.</p>
 <p>Attach your existing alert callback when constructing the group:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="kn">from</span><span class="w"> </span><span class="nn">airflow_nomad</span><span class="w"> </span><span class="kn">import</span> <span class="n">Nomad</span>
 </span><span id="line-2">
@@ -164,16 +168,17 @@ configuration, then pass that configuration to <code class="docutils literal not
 </span><span id="line-6">    <span class="n">schedule</span><span class="o">=</span><span class="s2">"*/5 * * * *"</span><span class="p">,</span>
 </span><span id="line-7">    <span class="n">start_date</span><span class="o">=</span><span class="s2">"2025-01-01"</span><span class="p">,</span>
 </span><span id="line-8">    <span class="n">catchup</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-</span><span id="line-9">    <span class="n">tasks</span><span class="o">=</span><span class="p">{</span>
-</span><span id="line-10">        <span class="s2">"health"</span><span class="p">:</span> <span class="n">PythonTask</span><span class="p">(</span>
-</span><span id="line-11">            <span class="n">python_callable</span><span class="o">=</span><span class="n">check_nomad_health</span><span class="p">,</span>
-</span><span id="line-12">            <span class="n">op_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">"cfg"</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()},</span>
-</span><span id="line-13">            <span class="n">on_failure_callback</span><span class="o">=</span><span class="n">report_failed</span><span class="p">,</span>
-</span><span id="line-14">            <span class="n">retries</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-</span><span id="line-15">        <span class="p">),</span>
-</span><span id="line-16">    <span class="p">},</span>
-</span><span id="line-17"><span class="p">)</span>
-</span><span id="line-18"><span class="n">watchdog</span><span class="o">.</span><span class="n">instantiate</span><span class="p">()</span>
+</span><span id="line-9">    <span class="n">max_active_runs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+</span><span id="line-10">    <span class="n">tasks</span><span class="o">=</span><span class="p">{</span>
+</span><span id="line-11">        <span class="s2">"health"</span><span class="p">:</span> <span class="n">PythonTask</span><span class="p">(</span>
+</span><span id="line-12">            <span class="n">python_callable</span><span class="o">=</span><span class="n">check_nomad_health</span><span class="p">,</span>
+</span><span id="line-13">            <span class="n">op_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">"cfg"</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()},</span>
+</span><span id="line-14">            <span class="n">on_failure_callback</span><span class="o">=</span><span class="n">report_failed</span><span class="p">,</span>
+</span><span id="line-15">            <span class="n">retries</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+</span><span id="line-16">        <span class="p">),</span>
+</span><span id="line-17">    <span class="p">},</span>
+</span><span id="line-18"><span class="p">)</span>
+</span><span id="line-19"><span class="n">watchdog</span><span class="o">.</span><span class="n">instantiate</span><span class="p">()</span>
 </span></code></pre></div>
 </div>
 <p>For <code class="docutils literal notranslate"><span class="pre">airflow-config</span></code>, save <code class="docutils literal notranslate"><span class="pre">config/nomad_health.yaml</span></code> beside your DAG loader.
@@ -187,26 +192,27 @@ Supply the job configuration as <code class="docutils literal notranslate"><span
 </span><span id="line-7"><span class="w">    </span><span class="nt">schedule</span><span class="p">:</span><span class="w"> </span><span class="s">"*/5</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*"</span>
 </span><span id="line-8"><span class="w">    </span><span class="nt">start_date</span><span class="p">:</span><span class="w"> </span><span class="s">"2025-01-01"</span>
 </span><span id="line-9"><span class="w">    </span><span class="nt">catchup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-</span><span id="line-10"><span class="w">    </span><span class="nt">tasks</span><span class="p">:</span>
-</span><span id="line-11"><span class="w">      </span><span class="nt">health</span><span class="p">:</span>
-</span><span id="line-12"><span class="w">        </span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow_pydantic.PythonTask</span>
-</span><span id="line-13"><span class="w">        </span><span class="nt">python_callable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow_nomad.check_nomad_health</span>
-</span><span id="line-14"><span class="w">        </span><span class="nt">on_failure_callback</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">alerts.report_failed</span>
-</span><span id="line-15"><span class="w">        </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
-</span><span id="line-16"><span class="w">        </span><span class="nt">op_kwargs</span><span class="p">:</span>
-</span><span id="line-17"><span class="w">          </span><span class="nt">cfg</span><span class="p">:</span>
-</span><span id="line-18"><span class="w">            </span><span class="nt">forward_logs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-</span><span id="line-19"><span class="w">            </span><span class="nt">job</span><span class="p">:</span>
-</span><span id="line-20"><span class="w">              </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker</span>
-</span><span id="line-21"><span class="w">              </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
-</span><span id="line-22"><span class="w">              </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service</span>
-</span><span id="line-23"><span class="w">              </span><span class="nt">task_groups</span><span class="p">:</span>
-</span><span id="line-24"><span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker</span>
-</span><span id="line-25"><span class="w">                  </span><span class="nt">tasks</span><span class="p">:</span>
-</span><span id="line-26"><span class="w">                    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker</span>
-</span><span id="line-27"><span class="w">                      </span><span class="nt">driver</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec</span>
-</span><span id="line-28"><span class="w">                      </span><span class="nt">config</span><span class="p">:</span>
-</span><span id="line-29"><span class="w">                        </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/opt/jobs/worker</span>
+</span><span id="line-10"><span class="w">    </span><span class="nt">max_active_runs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+</span><span id="line-11"><span class="w">    </span><span class="nt">tasks</span><span class="p">:</span>
+</span><span id="line-12"><span class="w">      </span><span class="nt">health</span><span class="p">:</span>
+</span><span id="line-13"><span class="w">        </span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow_pydantic.PythonTask</span>
+</span><span id="line-14"><span class="w">        </span><span class="nt">python_callable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow_nomad.check_nomad_health</span>
+</span><span id="line-15"><span class="w">        </span><span class="nt">on_failure_callback</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">alerts.report_failed</span>
+</span><span id="line-16"><span class="w">        </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+</span><span id="line-17"><span class="w">        </span><span class="nt">op_kwargs</span><span class="p">:</span>
+</span><span id="line-18"><span class="w">          </span><span class="nt">cfg</span><span class="p">:</span>
+</span><span id="line-19"><span class="w">            </span><span class="nt">forward_logs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="line-20"><span class="w">            </span><span class="nt">job</span><span class="p">:</span>
+</span><span id="line-21"><span class="w">              </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker</span>
+</span><span id="line-22"><span class="w">              </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+</span><span id="line-23"><span class="w">              </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service</span>
+</span><span id="line-24"><span class="w">              </span><span class="nt">task_groups</span><span class="p">:</span>
+</span><span id="line-25"><span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker</span>
+</span><span id="line-26"><span class="w">                  </span><span class="nt">tasks</span><span class="p">:</span>
+</span><span id="line-27"><span class="w">                    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker</span>
+</span><span id="line-28"><span class="w">                      </span><span class="nt">driver</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec</span>
+</span><span id="line-29"><span class="w">                      </span><span class="nt">config</span><span class="p">:</span>
+</span><span id="line-30"><span class="w">                        </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/opt/jobs/worker</span>
 </span></code></pre></div>
 </div>
 <p>Save <code class="docutils literal notranslate"><span class="pre">nomad_health.py</span></code> in your DAG folder:</p>
@@ -220,8 +226,12 @@ Supply the job configuration as <code class="docutils literal notranslate"><span
 <p>The health callable checks the existing job without registering, restarting, or stopping
 it. A missing, stopped, failed, or completed persistent job fails the health
 task. Set <code class="docutils literal notranslate"><span class="pre">op_kwargs.require_running:</span> <span class="pre">false</span></code> if successfully completed batch
-jobs should pass. Each watchdog run reads a bounded snapshot of retained logs
-when forwarding is enabled, so successive runs can repeat output. A crash and
+jobs should pass. Watchdog tasks keep byte cursors in <code class="docutils literal notranslate"><span class="pre">nomad_log_offsets</span></code>
+XComs and read them from prior runs, including failed checks, to avoid replaying
+retained output. Keep XCom history for this health task to preserve those
+cursors. Limit the health DAG to one active run so checks do not overlap.
+Direct calls without an Airflow task instance read a bounded snapshot
+of retained logs on each invocation. A crash and
 recovery entirely between checks may be missed; shorten the schedule to match
 your detection requirement.</p>
 </section>
