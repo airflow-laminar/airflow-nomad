@@ -63,6 +63,7 @@ watchdog = Dag(
     schedule="*/5 * * * *",
     start_date="2025-01-01",
     catchup=False,
+    max_active_runs=1,
     tasks={
         "health": PythonTask(
             python_callable=check_nomad_health,
@@ -88,6 +89,7 @@ dags:
     schedule: "*/5 * * * *"
     start_date: "2025-01-01"
     catchup: false
+    max_active_runs: 1
     tasks:
       health:
         _target_: airflow_pydantic.PythonTask
@@ -126,7 +128,8 @@ task. Set `op_kwargs.require_running: false` if successfully completed batch
 jobs should pass. Watchdog tasks keep byte cursors in `nomad_log_offsets`
 XComs and read them from prior runs, including failed checks, to avoid replaying
 retained output. Keep XCom history for this health task to preserve those
-cursors. Direct calls without an Airflow task instance read a bounded snapshot
+cursors. Limit the health DAG to one active run so checks do not overlap.
+Direct calls without an Airflow task instance read a bounded snapshot
 of retained logs on each invocation. A crash and
 recovery entirely between checks may be missed; shorten the schedule to match
 your detection requirement.
