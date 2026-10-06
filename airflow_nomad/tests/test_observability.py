@@ -140,3 +140,64 @@ def test_serialized_task_id_does_not_override_step_ids(nomad_airflow_configurati
     nomad = Nomad(FakeDAG(), nomad_airflow_configuration, nomad_client=Mock(), task_id="wrapper")
     assert "task_id" not in nomad.get_base_operator_kwargs()
     assert nomad.check_job.task_id == "nomad-test-check-job"
+
+
+@pytest.mark.parametrize("first_state", ["running", "failed"])
+def test_watchdog_runs_retain_cursors_even_on_failure(nomad_airflow_configuration: NomadAirflowConfiguration, first_state: str, caplog) -> None:
+    from copy import deepcopy
+
+    caplog.set_level(logging.INFO)
+    nomad_airflow_configuration.forward_logs = True
+    client = Mock()
+    client.status.side_effect = [status(first_state), status()]
+    reads = []
+
+    def read_logs(allocation, task, stream, *, offsets, limit):
+        filename = f"job.{stream}.0"
+        reads.append(deepcopy(offsets))
+        return [] if filename in offsets else [LogChunk(filename, 0, f"new {stream}\n".encode())]
+
+    client.read_logs.side_effect = read_logs
+    saved = {}
+
+    def pull(*, task_ids, key, include_prior_dates):
+        assert task_ids == "health"
+        assert key == "nomad_log_offsets"
+        assert include_prior_dates is True
+        return deepcopy(saved)
+
+    def push(*, key, value):
+        assert key == "nomad_log_offsets"
+        saved.clear()
+        saved.update(deepcopy(value))
+
+    for run in range(2):
+        ti = Mock(task_id="health")
+        ti.xcom_pull.side_effect = pull
+        ti.xcom_push.side_effect = push
+        if run == 0 and first_state == "failed":
+            with pytest.raises(AirflowException, match="unhealthy"):
+                check_nomad_health(nomad_airflow_configuration, nomad_client=client, task_instance=ti)
+        else:
+            assert check_nomad_health(nomad_airflow_configuration, nomad_client=client, ti=ti)["running"]
+        ti.xcom_push.assert_called_once()
+    assert caplog.text.count("new stdout") == 1
+    assert caplog.text.count("new stderr") == 1
+    assert reads[2] == {"job.stdout.0": len(b"new stdout\n")}
+    assert all(isinstance(offset, int) for files in saved.values() for offset in files.values())
+
+
+@pytest.mark.parametrize("step", ["stop-job", "restart-job", "force-kill"])
+def test_lifecycle_command_runs_when_final_status_read_fails(nomad_airflow_configuration: NomadAirflowConfiguration, step: Step, caplog) -> None:
+    nomad_airflow_configuration.forward_logs = True
+    client = Mock()
+    client.restart.return_value = client.stop.return_value = CommandResult(0, "", "")
+    client.status.side_effect = RuntimeError("status unavailable")
+    nomad = Nomad(FakeDAG(), nomad_airflow_configuration, nomad_client=client)
+    assert nomad.get_step_kwargs(step)["python_callable"]() is True
+    assert "Cannot read Nomad status for final logs: status unavailable" in caplog.text
+    if step == "restart-job":
+        client.restart.assert_called_once()
+    else:
+        client.stop.assert_called_once()
+    client.read_logs.assert_not_called()
