@@ -82,6 +82,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial: run your first Nomad job</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how-to.html">How-to guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../observability.html">How to forward Nomad logs and alert on failures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../explanation.html">Why Airflow owns the Nomad job lifecycle</a></li>
 <li class="toctree-l1 current" x-data="{ expanded: $el.classList.contains('current') ? true : false }"><a :class="{ 'expanded' : expanded }" @click="expanded = !expanded" class="reference internal expandable" href="../api.html">API reference<button @click.prevent.stop="expanded = !expanded" type="button" x-cloak=""><span class="sr-only"></span><svg fill="currentColor" height="18px" stroke="none" viewbox="0 0 24 24" width="18px" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg></button></a><ul class="current" x-show="expanded">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">airflow_nomad.NomadAirflowConfiguration</a></li>
@@ -183,6 +184,16 @@
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">restart_on_retrigger</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#airflow_nomad.NomadAirflowConfiguration.restart_on_retrigger" title="Link to this definition" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#airflow_nomad.NomadAirflowConfiguration.restart_on_retrigger'">¶</a></dt>
 <dd><p>Restart allocations when airflow-ha retriggers the job</p>
 </dd></dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="airflow_nomad.NomadAirflowConfiguration.forward_logs">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">forward_logs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#airflow_nomad.NomadAirflowConfiguration.forward_logs" title="Link to this definition" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#airflow_nomad.NomadAirflowConfiguration.forward_logs'">¶</a></dt>
+<dd><p>Forward Nomad task stdout and stderr into Airflow task logs</p>
+</dd></dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="airflow_nomad.NomadAirflowConfiguration.log_chunk_size">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">log_chunk_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">65536</span></em><a class="headerlink" href="#airflow_nomad.NomadAirflowConfiguration.log_chunk_size" title="Link to this definition" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#airflow_nomad.NomadAirflowConfiguration.log_chunk_size'">¶</a></dt>
+<dd><p>Maximum bytes read per allocation task stream on each check</p>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="airflow_nomad.NomadAirflowConfiguration.nomad_json">
 <span class="sig-name descname"><span class="pre">nomad_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../../_modules/airflow_nomad/config.html#NomadAirflowConfiguration.nomad_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airflow_nomad.NomadAirflowConfiguration.nomad_json" title="Link to this definition" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#airflow_nomad.NomadAirflowConfiguration.nomad_json'">¶</a></dt>
@@ -206,6 +217,8 @@
 <li><a :data-current="activeSection === '#airflow_nomad.NomadAirflowConfiguration.purge_on_exit'" class="reference internal" href="#airflow_nomad.NomadAirflowConfiguration.purge_on_exit"><code class="docutils literal notranslate"><span class="pre">NomadAirflowConfiguration.purge_on_exit</span></code></a></li>
 <li><a :data-current="activeSection === '#airflow_nomad.NomadAirflowConfiguration.restart_on_initial'" class="reference internal" href="#airflow_nomad.NomadAirflowConfiguration.restart_on_initial"><code class="docutils literal notranslate"><span class="pre">NomadAirflowConfiguration.restart_on_initial</span></code></a></li>
 <li><a :data-current="activeSection === '#airflow_nomad.NomadAirflowConfiguration.restart_on_retrigger'" class="reference internal" href="#airflow_nomad.NomadAirflowConfiguration.restart_on_retrigger"><code class="docutils literal notranslate"><span class="pre">NomadAirflowConfiguration.restart_on_retrigger</span></code></a></li>
+<li><a :data-current="activeSection === '#airflow_nomad.NomadAirflowConfiguration.forward_logs'" class="reference internal" href="#airflow_nomad.NomadAirflowConfiguration.forward_logs"><code class="docutils literal notranslate"><span class="pre">NomadAirflowConfiguration.forward_logs</span></code></a></li>
+<li><a :data-current="activeSection === '#airflow_nomad.NomadAirflowConfiguration.log_chunk_size'" class="reference internal" href="#airflow_nomad.NomadAirflowConfiguration.log_chunk_size"><code class="docutils literal notranslate"><span class="pre">NomadAirflowConfiguration.log_chunk_size</span></code></a></li>
 <li><a :data-current="activeSection === '#airflow_nomad.NomadAirflowConfiguration.nomad_json'" class="reference internal" href="#airflow_nomad.NomadAirflowConfiguration.nomad_json"><code class="docutils literal notranslate"><span class="pre">NomadAirflowConfiguration.nomad_json()</span></code></a></li>
 </ul>
 </li>

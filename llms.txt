@@ -7,6 +7,7 @@
 - [airflow-nomad](index.html.md): Run and monitor Nomad-managed jobs from Apache Airflow.
 - [Tutorial: run your first Nomad job](docs/src/tutorial.html.md): We will run a five-second batch job from Airflow, monitor its completion, and remove its generated jobspec.
 - [How-to guides](docs/src/how-to.html.md): Run Nomad jobs from inline Python or airflow-config YAML. Both formats use the Nomad CLI on the Airflow worker to reach the cluster’s API.
+- [How to forward Nomad logs and alert on failures](docs/src/observability.html.md): Enable forwarding on the configuration passed to an existing Nomad task group:
 - [Why Airflow owns the Nomad job lifecycle](docs/src/explanation.html.md): Airflow coordinates workflows; Nomad schedules and supervises the processes that perform one step. airflow-nomad submits jobs within an Airflow DAG run and m...
 - [API reference](docs/src/api.html.md): The public integration API is exported from airflow_nomad. Jobspec models and the CLI client are re-exported from nomad_pydantic, whose API reference describ...
 - [airflow_nomad.NomadAirflowConfiguration](docs/src/_build/airflow_nomad.NomadAirflowConfiguration.html.md): Bases: NomadConfiguration

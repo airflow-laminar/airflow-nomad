@@ -37,7 +37,7 @@
 <link href="../../_static/awesome-myst-nb.css?v=7c7ea10c" rel="stylesheet" type="text/css"/>
 <link href="../../search.html" rel="search" title="Search"/>
 <link href="../../genindex.html" rel="index" title="Index"/>
-<link href="explanation.html" rel="next" title="Why Airflow owns the Nomad job lifecycle"/>
+<link href="observability.html" rel="next" title="How to forward Nomad logs and alert on failures"/>
 <link href="tutorial.html" rel="prev" title="Tutorial: run your first Nomad job"/>
 </head>
 <body :class="{ 'overflow-hidden': showSidebar }" class="min-h-screen font-sans antialiased bg-background text-foreground" x-data="{ showSidebar: false, showScrollTop: false }">
@@ -82,6 +82,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial: run your first Nomad job</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">How-to guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="observability.html">How to forward Nomad logs and alert on failures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="explanation.html">Why Airflow owns the Nomad job lifecycle</a></li>
 <li class="toctree-l1" x-data="{ expanded: $el.classList.contains('current') ? true : false }"><a :class="{ 'expanded' : expanded }" @click="expanded = !expanded" class="reference internal expandable" href="api.html">API reference<button @click.prevent.stop="expanded = !expanded" type="button" x-cloak=""><span class="sr-only"></span><svg fill="currentColor" height="18px" stroke="none" viewbox="0 0 24 24" width="18px" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg></button></a><ul x-cloak="" x-show="expanded">
 <li class="toctree-l2"><a class="reference internal" href="_build/airflow_nomad.NomadAirflowConfiguration.html">airflow_nomad.NomadAirflowConfiguration</a></li>

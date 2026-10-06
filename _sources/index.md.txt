@@ -10,6 +10,8 @@ docs/src/tutorial.md
 
 docs/src/how-to.md
 
+docs/src/observability.md
+
 docs/src/explanation.md
 
 docs/src/api.md

@@ -114,6 +114,7 @@
   <ul>
 <li class="toctree-l1"><a class="reference internal" href="docs/src/tutorial.html">Tutorial: run your first Nomad job</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docs/src/how-to.html">How-to guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs/src/observability.html">How to forward Nomad logs and alert on failures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docs/src/explanation.html">Why Airflow owns the Nomad job lifecycle</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docs/src/api.html">API reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="docs/src/_build/airflow_nomad.NomadAirflowConfiguration.html">airflow_nomad.NomadAirflowConfiguration</a></li>
@@ -200,10 +201,23 @@
   </tr>
       </table>
   
+  <h2 id="F">F</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul style="margin-left:0;list-style-type:none">
+      <li><a href="docs/src/_build/airflow_nomad.NomadAirflowConfiguration.html#airflow_nomad.NomadAirflowConfiguration.forward_logs">forward_logs (airflow_nomad.NomadAirflowConfiguration attribute)</a>
+</li>
+  </ul></td>
+  </tr>
+      </table>
+  
   <h2 id="L">L</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul style="margin-left:0;list-style-type:none">
       <li><a href="docs/src/_build/airflow_nomad.load_airflow_config.html#airflow_nomad.load_airflow_config">load_airflow_config() (in module airflow_nomad)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul style="margin-left:0;list-style-type:none">
+      <li><a href="docs/src/_build/airflow_nomad.NomadAirflowConfiguration.html#airflow_nomad.NomadAirflowConfiguration.log_chunk_size">log_chunk_size (airflow_nomad.NomadAirflowConfiguration attribute)</a>
 </li>
   </ul></td>
   </tr>
@@ -287,7 +301,7 @@
 </div></div>
 <aside id="right-sidebar" class="hidden text-sm xl:block">
 <div class="sticky top-16 -mt-10 max-h-[calc(var(--vh)-4rem)] overflow-y-auto pt-6 space-y-2">
-<a class="pt-2 block text-muted-foreground no-underline transition-colors hover:text-foreground focus-visible:outline-offset-[-1px]" href="#_">_</a><a class="pt-2 block text-muted-foreground no-underline transition-colors hover:text-foreground focus-visible:outline-offset-[-1px]" href="#C">C</a><a class="pt-2 block text-muted-foreground no-underline transition-colors hover:text-foreground focus-visible:outline-offset-[-1px]" href="#E">E</a><a class="pt-2 block text-muted-foreground no-underline transition-colors hover:text-foreground focus-visible:outline-offset-[-1px]" href="#L">L</a><a class="pt-2 block text-muted-foreground no-underline transition-colors hover:text-foreground focus-visible:outline-offset-[-1px]" href="#M">M</a><a class="pt-2 block text-muted-foreground no-underline transition-colors hover:text-foreground focus-visible:outline-offset-[-1px]" href="#N">N</a><a class="pt-2 block text-muted-foreground no-underline transition-colors hover:text-foreground focus-visible:outline-offset-[-1px]" href="#O">O</a><a class="pt-2 block text-muted-foreground no-underline transition-colors hover:text-foreground focus-visible:outline-offset-[-1px]" href="#P">P</a><a class="pt-2 block text-muted-foreground no-underline transition-colors hover:text-foreground focus-visible:outline-offset-[-1px]" href="#R">R</a><a class="pt-2 block text-muted-foreground no-underline transition-colors hover:text-foreground focus-visible:outline-offset-[-1px]" href="#S">S</a>
+<a class="pt-2 block text-muted-foreground no-underline transition-colors hover:text-foreground focus-visible:outline-offset-[-1px]" href="#_">_</a><a class="pt-2 block text-muted-foreground no-underline transition-colors hover:text-foreground focus-visible:outline-offset-[-1px]" href="#C">C</a><a class="pt-2 block text-muted-foreground no-underline transition-colors hover:text-foreground focus-visible:outline-offset-[-1px]" href="#E">E</a><a class="pt-2 block text-muted-foreground no-underline transition-colors hover:text-foreground focus-visible:outline-offset-[-1px]" href="#F">F</a><a class="pt-2 block text-muted-foreground no-underline transition-colors hover:text-foreground focus-visible:outline-offset-[-1px]" href="#L">L</a><a class="pt-2 block text-muted-foreground no-underline transition-colors hover:text-foreground focus-visible:outline-offset-[-1px]" href="#M">M</a><a class="pt-2 block text-muted-foreground no-underline transition-colors hover:text-foreground focus-visible:outline-offset-[-1px]" href="#N">N</a><a class="pt-2 block text-muted-foreground no-underline transition-colors hover:text-foreground focus-visible:outline-offset-[-1px]" href="#O">O</a><a class="pt-2 block text-muted-foreground no-underline transition-colors hover:text-foreground focus-visible:outline-offset-[-1px]" href="#P">P</a><a class="pt-2 block text-muted-foreground no-underline transition-colors hover:text-foreground focus-visible:outline-offset-[-1px]" href="#R">R</a><a class="pt-2 block text-muted-foreground no-underline transition-colors hover:text-foreground focus-visible:outline-offset-[-1px]" href="#S">S</a>
 </div>
 </aside>
           </main>

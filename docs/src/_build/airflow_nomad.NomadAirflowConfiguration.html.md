@@ -54,6 +54,14 @@ Restart allocations on an initial Airflow run
 
 Restart allocations when airflow-ha retriggers the job
 
+#### *field* forward_logs *: bool* *= False*
+
+Forward Nomad task stdout and stderr into Airflow task logs
+
+#### *field* log_chunk_size *: int* *= 65536*
+
+Maximum bytes read per allocation task stream on each check
+
 #### nomad_json() → str[[source]](../../../_modules/airflow_nomad/config.html.md#NomadAirflowConfiguration.nomad_json)
 
 Serialize only fields understood by nomad-pydantic.
