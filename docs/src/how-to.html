@@ -38,7 +38,7 @@
 <link href="../../search.html" rel="search" title="Search"/>
 <link href="../../genindex.html" rel="index" title="Index"/>
 <link href="explanation.html" rel="next" title="Why Airflow owns the Nomad job lifecycle"/>
-<link href="tutorial.html" rel="prev" title="Tutorial: run a Nomad job from Airflow"/>
+<link href="tutorial.html" rel="prev" title="Tutorial: run your first Nomad job"/>
 </head>
 <body :class="{ 'overflow-hidden': showSidebar }" class="min-h-screen font-sans antialiased bg-background text-foreground" x-data="{ showSidebar: false, showScrollTop: false }">
 <div @click.self="showSidebar = false" class="fixed inset-0 z-50 overflow-hidden bg-background/80 backdrop-blur-sm md:hidden" x-cloak="" x-show="showSidebar"></div><div class="relative flex flex-col min-h-screen" id="page"><a class="absolute top-0 left-0 z-[100] block bg-background p-4 text-xl transition -translate-x-full opacity-0 focus:translate-x-0 focus:opacity-100" href="#content">
@@ -80,7 +80,7 @@
 <div class="relative overflow-hidden md:overflow-auto my-4 md:my-0">
 <div class="overflow-y-auto h-full w-full relative pr-6"><nav class="table w-full min-w-full my-6 lg:my-8">
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial: run a Nomad job from Airflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial: run your first Nomad job</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">How-to guides</a></li>
 <li class="toctree-l1"><a class="reference internal" href="explanation.html">Why Airflow owns the Nomad job lifecycle</a></li>
 <li class="toctree-l1" x-data="{ expanded: $el.classList.contains('current') ? true : false }"><a :class="{ 'expanded' : expanded }" @click="expanded = !expanded" class="reference internal expandable" href="api.html">API reference<button @click.prevent.stop="expanded = !expanded" type="button" x-cloak=""><span class="sr-only"></span><svg fill="currentColor" height="18px" stroke="none" viewbox="0 0 24 24" width="18px" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg></button></a><ul x-cloak="" x-show="expanded">
@@ -117,93 +117,231 @@
 <div id="content" role="main">
 <section class="tex2jax_ignore mathjax_ignore" id="how-to-guides">
 <h1>How-to guides<a class="headerlink" href="#how-to-guides" title="Link to this heading">¶</a></h1>
-<p>These guides cover common lifecycle and deployment configurations.</p>
-<section id="how-to-keep-a-service-running-after-the-dag-finishes">
-<h2>How to keep a service running after the DAG finishes<a class="headerlink" href="#how-to-keep-a-service-running-after-the-dag-finishes" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#how-to-keep-a-service-running-after-the-dag-finishes'">¶</a></h2>
-<p>Disable stop and cleanup, then choose when to restart allocations:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="nt">cfg</span><span class="p">:</span>
-</span><span id="line-2"><span class="w">  </span><span class="nt">stop_on_exit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-</span><span id="line-3"><span class="w">  </span><span class="nt">cleanup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-</span><span id="line-4"><span class="w">  </span><span class="nt">restart_on_initial</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-</span><span id="line-5"><span class="w">  </span><span class="nt">restart_on_retrigger</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-</span><span id="line-6"><span class="w">  </span><span class="nt">job</span><span class="p">:</span>
-</span><span id="line-7"><span class="w">    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">api</span>
-</span><span id="line-8"><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service</span>
-</span><span id="line-9"><span class="w">    </span><span class="nt">task_groups</span><span class="p">:</span>
-</span><span id="line-10"><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">api</span>
-</span><span id="line-11"><span class="w">        </span><span class="nt">tasks</span><span class="p">:</span>
-</span><span id="line-12"><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">api</span>
-</span><span id="line-13"><span class="w">            </span><span class="nt">driver</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker</span>
-</span><span id="line-14"><span class="w">            </span><span class="nt">config</span><span class="p">:</span>
-</span><span id="line-15"><span class="w">              </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example/api:latest</span>
-</span></code></pre></div>
-</div>
-<p>Use this configuration when Nomad should retain ownership of the service after
-the Airflow run ends.</p>
-</section>
-<section id="how-to-limit-monitoring">
-<h2>How to limit monitoring<a class="headerlink" href="#how-to-limit-monitoring" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#how-to-limit-monitoring'">¶</a></h2>
-<p>Set Airflow-specific timing fields on <code class="docutils literal notranslate"><span class="pre">NomadAirflowConfiguration</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="nt">cfg</span><span class="p">:</span>
-</span><span id="line-2"><span class="w">  </span><span class="nt">check_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">00:00:10</span>
-</span><span id="line-3"><span class="w">  </span><span class="nt">check_timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">08:00:00</span>
-</span><span id="line-4"><span class="w">  </span><span class="nt">runtime</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">04:00:00</span>
-</span><span id="line-5"><span class="w">  </span><span class="nt">maxretrigger</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
-</span><span id="line-6"><span class="w">  </span><span class="nt">job</span><span class="p">:</span>
-</span><span id="line-7"><span class="w">    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">report</span>
-</span><span id="line-8"><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">batch</span>
-</span><span id="line-9"><span class="w">    </span><span class="nt">task_groups</span><span class="p">:</span>
-</span><span id="line-10"><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">report</span>
-</span><span id="line-11"><span class="w">        </span><span class="nt">tasks</span><span class="p">:</span>
-</span><span id="line-12"><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">report</span>
-</span><span id="line-13"><span class="w">            </span><span class="nt">driver</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec</span>
-</span><span id="line-14"><span class="w">            </span><span class="nt">config</span><span class="p">:</span>
-</span><span id="line-15"><span class="w">              </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/opt/jobs/report</span>
-</span></code></pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">check_interval</span></code> controls polling, <code class="docutils literal notranslate"><span class="pre">check_timeout</span></code> controls the sensor timeout,
-and <code class="docutils literal notranslate"><span class="pre">runtime</span></code> controls the allowed external job duration.</p>
-</section>
-<section id="how-to-select-a-nomad-cluster">
-<h2>How to select a Nomad cluster<a class="headerlink" href="#how-to-select-a-nomad-cluster" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#how-to-select-a-nomad-cluster'">¶</a></h2>
-<p>Set standard Nomad CLI environment variables on every Airflow worker that can
-run the lifecycle tasks:</p>
+<p>Run Nomad jobs from inline Python or <code class="docutils literal notranslate"><span class="pre">airflow-config</span></code> YAML. Both formats use the
+Nomad CLI on the Airflow worker to reach the cluster’s API.</p>
+<section id="how-to-select-a-cluster-and-namespace">
+<h2>How to select a cluster and namespace<a class="headerlink" href="#how-to-select-a-cluster-and-namespace" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#how-to-select-a-cluster-and-namespace'">¶</a></h2>
+<p>Install the Nomad CLI on every worker that can execute this lifecycle. Set the
+connection environment in the worker process, rather than only in an interactive
+shell:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="nb">export</span><span class="w"> </span><span class="nv">NOMAD_ADDR</span><span class="o">=</span>https://nomad.example.com:4646
 </span><span id="line-2"><span class="nb">export</span><span class="w"> </span><span class="nv">NOMAD_NAMESPACE</span><span class="o">=</span>analytics
-</span><span id="line-3"><span class="nb">export</span><span class="w"> </span><span class="nv">NOMAD_TOKEN</span><span class="o">=</span>...
+</span><span id="line-3"><span class="nb">export</span><span class="w"> </span><span class="nv">NOMAD_CACERT</span><span class="o">=</span>/etc/nomad/tls/ca.pem
 </span></code></pre></div>
 </div>
-<p>Set <code class="docutils literal notranslate"><span class="pre">job.namespace</span></code> in the jobspec when the namespace is part of the declarative
-configuration. The explicit job namespace takes precedence for job-scoped CLI
-operations.</p>
+<p>Supply <code class="docutils literal notranslate"><span class="pre">NOMAD_TOKEN</span></code> through your deployment’s secret injection. If the cluster
+requires mutual TLS, also supply <code class="docutils literal notranslate"><span class="pre">NOMAD_CLIENT_CERT</span></code> and <code class="docutils literal notranslate"><span class="pre">NOMAD_CLIENT_KEY</span></code>.
+The token needs permissions to read, submit, and stop jobs in the target
+namespace. See the <a class="reference external" href="https://developer.hashicorp.com/nomad/commands">Nomad CLI reference</a>
+for connection and authentication variables.</p>
+<p>Create the namespace before submitting jobs. Have a cluster administrator run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">nomad<span class="w"> </span>namespace<span class="w"> </span>apply<span class="w"> </span>analytics
+</span></code></pre></div>
+</div>
+<p>Set <code class="docutils literal notranslate"><span class="pre">job.namespace="analytics"</span></code> in Python or <code class="docutils literal notranslate"><span class="pre">namespace:</span> <span class="pre">analytics</span></code> under <code class="docutils literal notranslate"><span class="pre">job</span></code>
+in YAML. This explicit namespace is included in the jobspec and takes precedence
+for job-scoped CLI calls. If omitted, the CLI uses <code class="docutils literal notranslate"><span class="pre">NOMAD_NAMESPACE</span></code> or <code class="docutils literal notranslate"><span class="pre">default</span></code>.</p>
+<p>Confirm access from the worker account:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">nomad<span class="w"> </span>job<span class="w"> </span>status<span class="w"> </span>-namespace<span class="o">=</span>analytics
+</span></code></pre></div>
+</div>
+<p>Select datacenters and drivers available in that cluster. Commands and paths in
+a task’s <code class="docutils literal notranslate"><span class="pre">config</span></code> refer to the Nomad client node or task container, rather than
+the Airflow worker. The <code class="docutils literal notranslate"><span class="pre">exec</span></code> examples below need Linux Nomad clients with that
+driver available. No SSH connection is required for a remote cluster.</p>
 </section>
-<section id="how-to-purge-job-history">
-<h2>How to purge job history<a class="headerlink" href="#how-to-purge-job-history" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#how-to-purge-job-history'">¶</a></h2>
-<p>Enable purge when the normal stop task runs:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="nt">cfg</span><span class="p">:</span>
-</span><span id="line-2"><span class="w">  </span><span class="nt">stop_on_exit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-</span><span id="line-3"><span class="w">  </span><span class="nt">purge_on_exit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<section id="how-to-run-a-job-in-python">
+<h2>How to run a job in Python<a class="headerlink" href="#how-to-run-a-job-in-python" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#how-to-run-a-job-in-python'">¶</a></h2>
+<p>Install <code class="docutils literal notranslate"><span class="pre">airflow-nomad[airflow]</span></code> in Airflow 2, or
+<code class="docutils literal notranslate"><span class="pre">airflow-nomad[airflow3]</span></code> in Airflow 3. Complete the
+<a class="reference internal" href="#how-to-select-a-cluster-and-namespace">cluster setup</a>.</p>
+<p>Give all lifecycle tasks the same writable absolute <code class="docutils literal notranslate"><span class="pre">working_dir</span></code>. With several
+workers, mount that path on shared storage; configuration, registration, and
+cleanup must reach the same jobspec. Every worker also needs the same cluster
+credentials. Reserve the job ID for this DAG.</p>
+<p>Save this DAG in the DAG folder, adapting the namespace, datacenter, driver,
+and command to your cluster:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+</span><span id="line-2">
+</span><span id="line-3"><span class="kn">from</span><span class="w"> </span><span class="nn">airflow</span><span class="w"> </span><span class="kn">import</span> <span class="n">DAG</span>
+</span><span id="line-4"><span class="kn">from</span><span class="w"> </span><span class="nn">airflow_nomad</span><span class="w"> </span><span class="kn">import</span> <span class="n">Job</span><span class="p">,</span> <span class="n">Nomad</span><span class="p">,</span> <span class="n">NomadAirflowConfiguration</span><span class="p">,</span> <span class="n">Task</span><span class="p">,</span> <span class="n">TaskGroup</span>
+</span><span id="line-5">
+</span><span id="line-6"><span class="k">with</span> <span class="n">DAG</span><span class="p">(</span>
+</span><span id="line-7">    <span class="n">dag_id</span><span class="o">=</span><span class="s2">"batch-nomad"</span><span class="p">,</span>
+</span><span id="line-8">    <span class="n">schedule</span><span class="o">=</span><span class="s2">"@daily"</span><span class="p">,</span>
+</span><span id="line-9">    <span class="n">start_date</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2025</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span>
+</span><span id="line-10">    <span class="n">catchup</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="line-11"><span class="p">)</span> <span class="k">as</span> <span class="n">dag</span><span class="p">:</span>
+</span><span id="line-12">    <span class="n">nomad</span> <span class="o">=</span> <span class="n">Nomad</span><span class="p">(</span>
+</span><span id="line-13">        <span class="n">dag</span><span class="o">=</span><span class="n">dag</span><span class="p">,</span>
+</span><span id="line-14">        <span class="n">cfg</span><span class="o">=</span><span class="n">NomadAirflowConfiguration</span><span class="p">(</span>
+</span><span id="line-15">            <span class="n">working_dir</span><span class="o">=</span><span class="s2">"/var/tmp/batch-nomad"</span><span class="p">,</span>
+</span><span id="line-16">            <span class="n">job</span><span class="o">=</span><span class="n">Job</span><span class="p">(</span>
+</span><span id="line-17">                <span class="nb">id</span><span class="o">=</span><span class="s2">"airflow-batch"</span><span class="p">,</span>
+</span><span id="line-18">                <span class="nb">type</span><span class="o">=</span><span class="s2">"batch"</span><span class="p">,</span>
+</span><span id="line-19">                <span class="n">namespace</span><span class="o">=</span><span class="s2">"analytics"</span><span class="p">,</span>
+</span><span id="line-20">                <span class="n">datacenters</span><span class="o">=</span><span class="p">[</span><span class="s2">"dc1"</span><span class="p">],</span>
+</span><span id="line-21">                <span class="n">task_groups</span><span class="o">=</span><span class="p">[</span>
+</span><span id="line-22">                    <span class="n">TaskGroup</span><span class="p">(</span>
+</span><span id="line-23">                        <span class="n">name</span><span class="o">=</span><span class="s2">"batch"</span><span class="p">,</span>
+</span><span id="line-24">                        <span class="n">tasks</span><span class="o">=</span><span class="p">[</span><span class="n">Task</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"sleep"</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="s2">"exec"</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s2">"command"</span><span class="p">:</span> <span class="s2">"/bin/sleep"</span><span class="p">,</span> <span class="s2">"args"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"5"</span><span class="p">]})],</span>
+</span><span id="line-25">                    <span class="p">),</span>
+</span><span id="line-26">                <span class="p">],</span>
+</span><span id="line-27">            <span class="p">),</span>
+</span><span id="line-28">        <span class="p">),</span>
+</span><span id="line-29">    <span class="p">)</span>
 </span></code></pre></div>
 </div>
-<p>The force-kill path always requests a purge.</p>
+<p>Run <code class="docutils literal notranslate"><span class="pre">airflow</span> <span class="pre">tasks</span> <span class="pre">list</span> <span class="pre">batch-nomad</span></code>, then trigger <code class="docutils literal notranslate"><span class="pre">batch-nomad</span></code>. Registration
+starts the job; successful completion stops it and removes the local jobspec.</p>
+</section>
+<section id="how-to-run-a-job-with-airflow-config">
+<h2>How to run a job with airflow-config<a class="headerlink" href="#how-to-run-a-job-with-airflow-config" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#how-to-run-a-job-with-airflow-config'">¶</a></h2>
+<p>Use the packages, cluster, and shared artifact path from the
+<a class="reference internal" href="#how-to-run-a-job-in-python">Python guide</a>. Install <code class="docutils literal notranslate"><span class="pre">airflow-config</span></code> in the DAG
+parsing environment.</p>
+<p>Create <code class="docutils literal notranslate"><span class="pre">config/batch_nomad.yaml</span></code> beside the DAG loader:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="c1"># @package _global_</span>
+</span><span id="line-2"><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow_config.Configuration</span>
+</span><span id="line-3"><span class="nt">_convert_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">all</span>
+</span><span id="line-4">
+</span><span id="line-5"><span class="nt">dags</span><span class="p">:</span>
+</span><span id="line-6"><span class="w">  </span><span class="nt">batch-nomad</span><span class="p">:</span>
+</span><span id="line-7"><span class="w">    </span><span class="nt">schedule</span><span class="p">:</span><span class="w"> </span><span class="s">"@daily"</span>
+</span><span id="line-8"><span class="w">    </span><span class="nt">start_date</span><span class="p">:</span><span class="w"> </span><span class="s">"2025-01-01"</span>
+</span><span id="line-9"><span class="w">    </span><span class="nt">catchup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="line-10"><span class="w">    </span><span class="nt">tasks</span><span class="p">:</span>
+</span><span id="line-11"><span class="w">      </span><span class="nt">run</span><span class="p">:</span>
+</span><span id="line-12"><span class="w">        </span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow_nomad.NomadTask</span>
+</span><span id="line-13"><span class="w">        </span><span class="nt">cfg</span><span class="p">:</span>
+</span><span id="line-14"><span class="w">          </span><span class="nt">working_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/tmp/batch-nomad</span>
+</span><span id="line-15"><span class="w">          </span><span class="nt">job</span><span class="p">:</span>
+</span><span id="line-16"><span class="w">            </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow-batch</span>
+</span><span id="line-17"><span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">batch</span>
+</span><span id="line-18"><span class="w">            </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">analytics</span>
+</span><span id="line-19"><span class="w">            </span><span class="nt">datacenters</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">dc1</span><span class="p p-Indicator">]</span>
+</span><span id="line-20"><span class="w">            </span><span class="nt">task_groups</span><span class="p">:</span>
+</span><span id="line-21"><span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">batch</span>
+</span><span id="line-22"><span class="w">                </span><span class="nt">tasks</span><span class="p">:</span>
+</span><span id="line-23"><span class="w">                  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sleep</span>
+</span><span id="line-24"><span class="w">                    </span><span class="nt">driver</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec</span>
+</span><span id="line-25"><span class="w">                    </span><span class="nt">config</span><span class="p">:</span>
+</span><span id="line-26"><span class="w">                      </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/bin/sleep</span>
+</span><span id="line-27"><span class="w">                      </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"5"</span><span class="p p-Indicator">]</span>
+</span></code></pre></div>
+</div>
+<p>Save <code class="docutils literal notranslate"><span class="pre">batch_nomad.py</span></code> in the DAG folder:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="sd">"""Generate Airflow DAGs from the Nomad configuration."""</span>
+</span><span id="line-2">
+</span><span id="line-3"><span class="kn">from</span><span class="w"> </span><span class="nn">airflow_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_config</span>
+</span><span id="line-4">
+</span><span id="line-5"><span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">"config"</span><span class="p">,</span> <span class="s2">"batch_nomad"</span><span class="p">)</span>
+</span><span id="line-6"><span class="n">config</span><span class="o">.</span><span class="n">generate_in_mem</span><span class="p">()</span>
+</span></code></pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">_convert_:</span> <span class="pre">all</span></code> converts nested command arguments into Python lists before
+model construction, including values inside Nomad’s untyped <code class="docutils literal notranslate"><span class="pre">config</span></code> mapping.</p>
+<p>Run <code class="docutils literal notranslate"><span class="pre">airflow</span> <span class="pre">tasks</span> <span class="pre">list</span> <span class="pre">batch-nomad</span></code>, then trigger <code class="docutils literal notranslate"><span class="pre">batch-nomad</span></code>. Deploy either
+this loader or the inline Python DAG for that DAG ID. Environment variables
+select local or remote clusters in either format.</p>
+</section>
+<section id="how-to-limit-monitoring-or-retain-a-service">
+<h2>How to limit monitoring or retain a service<a class="headerlink" href="#how-to-limit-monitoring-or-retain-a-service" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#how-to-limit-monitoring-or-retain-a-service'">¶</a></h2>
+<p>Set monitoring controls under <code class="docutils literal notranslate"><span class="pre">cfg</span></code> in YAML:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="nt">check_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">00:00:10</span>
+</span><span id="line-2"><span class="nt">check_timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">08:00:00</span>
+</span><span id="line-3"><span class="nt">runtime</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">04:00:00</span>
+</span><span id="line-4"><span class="nt">maxretrigger</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+</span></code></pre></div>
+</div>
+<p>In Python, pass <code class="docutils literal notranslate"><span class="pre">timedelta(seconds=10)</span></code>, <code class="docutils literal notranslate"><span class="pre">timedelta(hours=8)</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">timedelta(hours=4)</span></code> for the duration fields, importing <code class="docutils literal notranslate"><span class="pre">timedelta</span></code> from
+<code class="docutils literal notranslate"><span class="pre">datetime</span></code>. <code class="docutils literal notranslate"><span class="pre">runtime</span></code> or <code class="docutils literal notranslate"><span class="pre">endtime</span></code> ends monitoring through the stop branch;
+<code class="docutils literal notranslate"><span class="pre">check_timeout</span></code> is the sensor timeout. See the
+<a class="reference internal" href="api.html#monitoring-and-lifecycle-fields"><span class="std std-ref">timing reference</span></a> for reference dates.</p>
+<p>For a service that should remain running between DAG runs, set
+<code class="docutils literal notranslate"><span class="pre">stop_on_exit=False</span></code>, <code class="docutils literal notranslate"><span class="pre">cleanup=False</span></code>, <code class="docutils literal notranslate"><span class="pre">restart_on_initial=True</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">restart_on_retrigger=True</span></code> in Python, or under <code class="docutils literal notranslate"><span class="pre">cfg</span></code> in YAML:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="nt">stop_on_exit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="line-2"><span class="nt">cleanup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="line-3"><span class="nt">restart_on_initial</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="line-4"><span class="nt">restart_on_retrigger</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="line-5"><span class="nt">runtime</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">04:00:00</span>
+</span></code></pre></div>
+</div>
+<p>Set <code class="docutils literal notranslate"><span class="pre">job.type="service"</span></code> and configure the long-running command or container in
+its task group. Keep the job ID, namespace, and artifact paths stable. Set an
+end condition for monitoring a service that never exits. Configure Nomad restart
+and reschedule policies separately for failures between Airflow runs.</p>
+</section>
+<section id="how-to-purge-job-history-or-clean-up-a-failed-run">
+<h2>How to purge job history or clean up a failed run<a class="headerlink" href="#how-to-purge-job-history-or-clean-up-a-failed-run" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#how-to-purge-job-history-or-clean-up-a-failed-run'">¶</a></h2>
+<p>To purge history when the normal stop task runs, set <code class="docutils literal notranslate"><span class="pre">purge_on_exit=True</span></code> in
+Python, or under <code class="docutils literal notranslate"><span class="pre">cfg</span></code> in YAML:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="nt">stop_on_exit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="line-2"><span class="nt">purge_on_exit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="line-3"><span class="nt">cleanup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span></code></pre></div>
+</div>
+<p>Stop and cleanup follow successful monitoring. They do not finalize every
+failure. After a failed or cancelled run, stop the job from an authorized Nomad
+CLI environment, using its actual namespace and ID:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">nomad<span class="w"> </span>job<span class="w"> </span>stop<span class="w"> </span>-namespace<span class="o">=</span>analytics<span class="w"> </span>-purge<span class="w"> </span>-yes<span class="w"> </span>airflow-batch
+</span></code></pre></div>
+</div>
+<p>Remove its generated JSON file only after no active run uses it. The generated
+force-kill task also requests a purge; its normal parent is skipped, so it is
+not an automatic failure cleanup path.</p>
 </section>
 <section id="how-to-chain-the-lifecycle-with-other-tasks">
 <h2>How to chain the lifecycle with other tasks<a class="headerlink" href="#how-to-chain-the-lifecycle-with-other-tasks" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#how-to-chain-the-lifecycle-with-other-tasks'">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">Nomad</span></code> object behaves like a task group boundary:</p>
+<p>In Python, connect existing Airflow tasks to the <code class="docutils literal notranslate"><span class="pre">Nomad</span></code> object:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="n">prepare</span> <span class="o">&gt;&gt;</span> <span class="n">nomad</span> <span class="o">&gt;&gt;</span> <span class="n">publish</span>
 </span></code></pre></div>
 </div>
-<p>Upstream dependencies attach to <code class="docutils literal notranslate"><span class="pre">configure_nomad</span></code>. Downstream dependencies
-attach to <code class="docutils literal notranslate"><span class="pre">cleanup_nomad</span></code>, including when cleanup is represented by a skip task.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">airflow-config</span></code>, use the task mapping key in dependencies:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="nt">tasks</span><span class="p">:</span>
+</span><span id="line-2"><span class="w">  </span><span class="nt">prepare</span><span class="p">:</span>
+</span><span id="line-3"><span class="w">    </span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow_pydantic.BashTask</span>
+</span><span id="line-4"><span class="w">    </span><span class="nt">bash_command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">echo prepare</span>
+</span><span id="line-5"><span class="w">  </span><span class="nt">run</span><span class="p">:</span>
+</span><span id="line-6"><span class="w">    </span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow_nomad.NomadTask</span>
+</span><span id="line-7"><span class="w">    </span><span class="nt">_convert_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">all</span>
+</span><span id="line-8"><span class="w">    </span><span class="nt">dependencies</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">prepare</span><span class="p p-Indicator">]</span>
+</span><span id="line-9"><span class="w">    </span><span class="nt">cfg</span><span class="p">:</span>
+</span><span id="line-10"><span class="w">      </span><span class="nt">working_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/tmp/chained-nomad</span>
+</span><span id="line-11"><span class="w">      </span><span class="nt">job</span><span class="p">:</span>
+</span><span id="line-12"><span class="w">        </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow-chained</span>
+</span><span id="line-13"><span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">batch</span>
+</span><span id="line-14"><span class="w">        </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">analytics</span>
+</span><span id="line-15"><span class="w">        </span><span class="nt">datacenters</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">dc1</span><span class="p p-Indicator">]</span>
+</span><span id="line-16"><span class="w">        </span><span class="nt">task_groups</span><span class="p">:</span>
+</span><span id="line-17"><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">batch</span>
+</span><span id="line-18"><span class="w">            </span><span class="nt">tasks</span><span class="p">:</span>
+</span><span id="line-19"><span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sleep</span>
+</span><span id="line-20"><span class="w">                </span><span class="nt">driver</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec</span>
+</span><span id="line-21"><span class="w">                </span><span class="nt">config</span><span class="p">:</span>
+</span><span id="line-22"><span class="w">                  </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/bin/sleep</span>
+</span><span id="line-23"><span class="w">                  </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"5"</span><span class="p p-Indicator">]</span>
+</span><span id="line-24"><span class="w">  </span><span class="nt">publish</span><span class="p">:</span>
+</span><span id="line-25"><span class="w">    </span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow_pydantic.BashTask</span>
+</span><span id="line-26"><span class="w">    </span><span class="nt">bash_command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">echo publish</span>
+</span><span id="line-27"><span class="w">    </span><span class="nt">dependencies</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">run</span><span class="p p-Indicator">]</span>
+</span></code></pre></div>
+</div>
+<p>Upstream tasks precede configuration; downstream tasks follow cleanup. Keep
+stop and cleanup enabled for downstream tasks with the default <code class="docutils literal notranslate"><span class="pre">all_success</span></code>
+trigger rule. Disabling cleanup creates a skipped boundary task.</p>
 </section>
 </section>
 </div></div><aside class="hidden text-sm xl:block" id="right-sidebar">
 <div class="sticky top-16 -mt-10 max-h-[calc(100vh-5rem)] h-full overflow-y-auto pt-6 space-y-2"><p class="font-medium">On this page</p>
 <ul>
-<li><a :data-current="activeSection === '#how-to-keep-a-service-running-after-the-dag-finishes'" class="reference internal" href="#how-to-keep-a-service-running-after-the-dag-finishes">How to keep a service running after the DAG finishes</a></li>
-<li><a :data-current="activeSection === '#how-to-limit-monitoring'" class="reference internal" href="#how-to-limit-monitoring">How to limit monitoring</a></li>
-<li><a :data-current="activeSection === '#how-to-select-a-nomad-cluster'" class="reference internal" href="#how-to-select-a-nomad-cluster">How to select a Nomad cluster</a></li>
-<li><a :data-current="activeSection === '#how-to-purge-job-history'" class="reference internal" href="#how-to-purge-job-history">How to purge job history</a></li>
+<li><a :data-current="activeSection === '#how-to-select-a-cluster-and-namespace'" class="reference internal" href="#how-to-select-a-cluster-and-namespace">How to select a cluster and namespace</a></li>
+<li><a :data-current="activeSection === '#how-to-run-a-job-in-python'" class="reference internal" href="#how-to-run-a-job-in-python">How to run a job in Python</a></li>
+<li><a :data-current="activeSection === '#how-to-run-a-job-with-airflow-config'" class="reference internal" href="#how-to-run-a-job-with-airflow-config">How to run a job with airflow-config</a></li>
+<li><a :data-current="activeSection === '#how-to-limit-monitoring-or-retain-a-service'" class="reference internal" href="#how-to-limit-monitoring-or-retain-a-service">How to limit monitoring or retain a service</a></li>
+<li><a :data-current="activeSection === '#how-to-purge-job-history-or-clean-up-a-failed-run'" class="reference internal" href="#how-to-purge-job-history-or-clean-up-a-failed-run">How to purge job history or clean up a failed run</a></li>
 <li><a :data-current="activeSection === '#how-to-chain-the-lifecycle-with-other-tasks'" class="reference internal" href="#how-to-chain-the-lifecycle-with-other-tasks">How to chain the lifecycle with other tasks</a></li>
 </ul>
 </div>

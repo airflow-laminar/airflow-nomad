@@ -37,7 +37,7 @@
 <link href="_static/awesome-myst-nb.css?v=7c7ea10c" rel="stylesheet" type="text/css"/>
 <link href="search.html" rel="search" title="Search"/>
 <link href="genindex.html" rel="index" title="Index"/>
-<link href="docs/src/tutorial.html" rel="next" title="Tutorial: run a Nomad job from Airflow"/>
+<link href="docs/src/tutorial.html" rel="next" title="Tutorial: run your first Nomad job"/>
 </head>
 <body :class="{ 'overflow-hidden': showSidebar }" class="min-h-screen font-sans antialiased bg-background text-foreground" x-data="{ showSidebar: false, showScrollTop: false }">
 <div @click.self="showSidebar = false" class="fixed inset-0 z-50 overflow-hidden bg-background/80 backdrop-blur-sm md:hidden" x-cloak="" x-show="showSidebar"></div><div class="relative flex flex-col min-h-screen" id="page"><a class="absolute top-0 left-0 z-[100] block bg-background p-4 text-xl transition -translate-x-full opacity-0 focus:translate-x-0 focus:opacity-100" href="#content">
@@ -79,7 +79,7 @@
 <div class="relative overflow-hidden md:overflow-auto my-4 md:my-0">
 <div class="overflow-y-auto h-full w-full relative pr-6"><nav class="table w-full min-w-full my-6 lg:my-8">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="docs/src/tutorial.html">Tutorial: run a Nomad job from Airflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs/src/tutorial.html">Tutorial: run your first Nomad job</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docs/src/how-to.html">How-to guides</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docs/src/explanation.html">Why Airflow owns the Nomad job lifecycle</a></li>
 <li class="toctree-l1" x-data="{ expanded: $el.classList.contains('current') ? true : false }"><a :class="{ 'expanded' : expanded }" @click="expanded = !expanded" class="reference internal expandable" href="docs/src/api.html">API reference<button @click.prevent.stop="expanded = !expanded" type="button" x-cloak=""><span class="sr-only"></span><svg fill="currentColor" height="18px" stroke="none" viewbox="0 0 24 24" width="18px" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg></button></a><ul x-cloak="" x-show="expanded">
@@ -113,36 +113,50 @@
 <a class="reference external" href="https://codecov.io/gh/airflow-laminar/airflow-nomad"><img alt="codecov" src="https://codecov.io/gh/airflow-laminar/airflow-nomad/branch/main/graph/badge.svg"/></a>
 <a class="reference external" href="https://github.com/airflow-laminar/airflow-nomad"><img alt="License" src="https://img.shields.io/github/license/airflow-laminar/airflow-nomad"/></a>
 <a class="reference external" href="https://pypi.python.org/pypi/airflow-nomad"><img alt="PyPI" src="https://img.shields.io/pypi/v/airflow-nomad.svg"/></a></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="kn">from</span><span class="w"> </span><span class="nn">airflow</span><span class="w"> </span><span class="kn">import</span> <span class="n">DAG</span>
-</span><span id="line-2"><span class="kn">from</span><span class="w"> </span><span class="nn">airflow_nomad</span><span class="w"> </span><span class="kn">import</span> <span class="n">Job</span><span class="p">,</span> <span class="n">Nomad</span><span class="p">,</span> <span class="n">NomadAirflowConfiguration</span><span class="p">,</span> <span class="n">Task</span><span class="p">,</span> <span class="n">TaskGroup</span>
-</span><span id="line-3">
-</span><span id="line-4"><span class="n">dag</span> <span class="o">=</span> <span class="n">DAG</span><span class="p">(</span><span class="n">dag_id</span><span class="o">=</span><span class="s2">"nightly-nomad"</span><span class="p">,</span> <span class="n">schedule</span><span class="o">=</span><span class="s2">"@daily"</span><span class="p">)</span>
-</span><span id="line-5"><span class="n">config</span> <span class="o">=</span> <span class="n">NomadAirflowConfiguration</span><span class="p">(</span>
-</span><span id="line-6">    <span class="n">job</span><span class="o">=</span><span class="n">Job</span><span class="p">(</span>
-</span><span id="line-7">        <span class="nb">id</span><span class="o">=</span><span class="s2">"nightly"</span><span class="p">,</span>
-</span><span id="line-8">        <span class="nb">type</span><span class="o">=</span><span class="s2">"batch"</span><span class="p">,</span>
-</span><span id="line-9">        <span class="n">task_groups</span><span class="o">=</span><span class="p">[</span>
-</span><span id="line-10">            <span class="n">TaskGroup</span><span class="p">(</span>
-</span><span id="line-11">                <span class="n">name</span><span class="o">=</span><span class="s2">"nightly"</span><span class="p">,</span>
-</span><span id="line-12">                <span class="n">tasks</span><span class="o">=</span><span class="p">[</span><span class="n">Task</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"nightly"</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="s2">"exec"</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s2">"command"</span><span class="p">:</span> <span class="s2">"/opt/jobs/nightly"</span><span class="p">})],</span>
-</span><span id="line-13">            <span class="p">)</span>
-</span><span id="line-14">        <span class="p">],</span>
-</span><span id="line-15">    <span class="p">)</span>
-</span><span id="line-16"><span class="p">)</span>
-</span><span id="line-17"><span class="n">Nomad</span><span class="p">(</span><span class="n">dag</span><span class="o">=</span><span class="n">dag</span><span class="p">,</span> <span class="n">cfg</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+</span><span id="line-2">
+</span><span id="line-3"><span class="kn">from</span><span class="w"> </span><span class="nn">airflow</span><span class="w"> </span><span class="kn">import</span> <span class="n">DAG</span>
+</span><span id="line-4"><span class="kn">from</span><span class="w"> </span><span class="nn">airflow_nomad</span><span class="w"> </span><span class="kn">import</span> <span class="n">Job</span><span class="p">,</span> <span class="n">Nomad</span><span class="p">,</span> <span class="n">NomadAirflowConfiguration</span><span class="p">,</span> <span class="n">Task</span><span class="p">,</span> <span class="n">TaskGroup</span>
+</span><span id="line-5">
+</span><span id="line-6"><span class="n">dag</span> <span class="o">=</span> <span class="n">DAG</span><span class="p">(</span>
+</span><span id="line-7">    <span class="n">dag_id</span><span class="o">=</span><span class="s2">"nightly-nomad"</span><span class="p">,</span>
+</span><span id="line-8">    <span class="n">schedule</span><span class="o">=</span><span class="s2">"@daily"</span><span class="p">,</span>
+</span><span id="line-9">    <span class="n">start_date</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2025</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span>
+</span><span id="line-10">    <span class="n">catchup</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="line-11"><span class="p">)</span>
+</span><span id="line-12"><span class="n">config</span> <span class="o">=</span> <span class="n">NomadAirflowConfiguration</span><span class="p">(</span>
+</span><span id="line-13">    <span class="n">working_dir</span><span class="o">=</span><span class="s2">"/var/tmp/nightly-nomad"</span><span class="p">,</span>
+</span><span id="line-14">    <span class="n">job</span><span class="o">=</span><span class="n">Job</span><span class="p">(</span>
+</span><span id="line-15">        <span class="nb">id</span><span class="o">=</span><span class="s2">"airflow-nightly"</span><span class="p">,</span>
+</span><span id="line-16">        <span class="nb">type</span><span class="o">=</span><span class="s2">"batch"</span><span class="p">,</span>
+</span><span id="line-17">        <span class="n">namespace</span><span class="o">=</span><span class="s2">"default"</span><span class="p">,</span>
+</span><span id="line-18">        <span class="n">datacenters</span><span class="o">=</span><span class="p">[</span><span class="s2">"dc1"</span><span class="p">],</span>
+</span><span id="line-19">        <span class="n">task_groups</span><span class="o">=</span><span class="p">[</span>
+</span><span id="line-20">            <span class="n">TaskGroup</span><span class="p">(</span>
+</span><span id="line-21">                <span class="n">name</span><span class="o">=</span><span class="s2">"nightly"</span><span class="p">,</span>
+</span><span id="line-22">                <span class="n">tasks</span><span class="o">=</span><span class="p">[</span><span class="n">Task</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"nightly"</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="s2">"exec"</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s2">"command"</span><span class="p">:</span> <span class="s2">"/bin/sleep"</span><span class="p">,</span> <span class="s2">"args"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"5"</span><span class="p">]})],</span>
+</span><span id="line-23">            <span class="p">)</span>
+</span><span id="line-24">        <span class="p">],</span>
+</span><span id="line-25">    <span class="p">)</span>
+</span><span id="line-26"><span class="p">)</span>
+</span><span id="line-27"><span class="n">Nomad</span><span class="p">(</span><span class="n">dag</span><span class="o">=</span><span class="n">dag</span><span class="p">,</span> <span class="n">cfg</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
 </span></code></pre></div>
 </div>
 <p>The generated task lifecycle writes and registers the jobspec, monitors current
 allocations with <code class="docutils literal notranslate"><span class="pre">airflow-ha</span></code>, handles retriggers, stops the job, and optionally
-removes the generated configuration.</p>
+removes the generated configuration on successful completion. Workers use the
+Nomad CLI to reach local or remote clusters through their HTTP API. Define the
+same lifecycle in inline Python or <code class="docutils literal notranslate"><span class="pre">airflow-config</span></code> YAML.</p>
 <section id="documentation">
 <h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#documentation'">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="docs/src/tutorial.html"><span class="std std-doc">Tutorial: run a Nomad job from Airflow</span></a></p></li>
-<li><p><a class="reference internal" href="docs/src/how-to.html"><span class="std std-doc">How-to guides</span></a></p></li>
-<li><p><a class="reference internal" href="docs/src/explanation.html"><span class="std std-doc">Why Airflow owns the lifecycle</span></a></p></li>
-<li><p><a class="reference internal" href="docs/src/api.html"><span class="std std-doc">API reference</span></a></p></li>
-</ul>
+<p>Start with the <a class="reference internal" href="docs/src/tutorial.html"><span class="std std-doc">tutorial</span></a> to run a short batch job on a
+development cluster and check cleanup. For an existing cluster, follow the
+<a class="reference internal" href="docs/src/how-to.html#how-to-run-a-job-in-python"><span class="std std-ref">Python</span></a> or
+<a class="reference internal" href="docs/src/how-to.html#how-to-run-a-job-with-airflow-config"><span class="std std-ref"><code class="docutils literal notranslate"><span class="pre">airflow-config</span></code> guide</span></a>.
+Both use the same cluster credentials and namespace settings.</p>
+<p>The <a class="reference internal" href="docs/src/api.html"><span class="std std-doc">API reference</span></a> lists configuration defaults, monitoring
+settings, and task boundaries. <a class="reference internal" href="docs/src/explanation.html"><span class="std std-doc">Why Airflow owns the lifecycle</span></a>
+explains allocation state, persistent services, and scheduling ownership.</p>
 <p>Published documentation is available at
 <a class="reference external" href="https://airflow-laminar.github.io/airflow-nomad/">airflow-laminar.github.io/airflow-nomad</a>.</p>
 </section>

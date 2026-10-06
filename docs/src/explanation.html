@@ -80,7 +80,7 @@
 <div class="relative overflow-hidden md:overflow-auto my-4 md:my-0">
 <div class="overflow-y-auto h-full w-full relative pr-6"><nav class="table w-full min-w-full my-6 lg:my-8">
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial: run a Nomad job from Airflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial: run your first Nomad job</a></li>
 <li class="toctree-l1"><a class="reference internal" href="how-to.html">How-to guides</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Why Airflow owns the Nomad job lifecycle</a></li>
 <li class="toctree-l1" x-data="{ expanded: $el.classList.contains('current') ? true : false }"><a :class="{ 'expanded' : expanded }" @click="expanded = !expanded" class="reference internal expandable" href="api.html">API reference<button @click.prevent.stop="expanded = !expanded" type="button" x-cloak=""><span class="sr-only"></span><svg fill="currentColor" height="18px" stroke="none" viewbox="0 0 24 24" width="18px" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg></button></a><ul x-cloak="" x-show="expanded">
@@ -117,46 +117,93 @@
 <div id="content" role="main">
 <section class="tex2jax_ignore mathjax_ignore" id="why-airflow-owns-the-nomad-job-lifecycle">
 <h1>Why Airflow owns the Nomad job lifecycle<a class="headerlink" href="#why-airflow-owns-the-nomad-job-lifecycle" title="Link to this heading">¶</a></h1>
-<p>Airflow coordinates a workflow, while Nomad schedules and supervises the
-processes that perform one long-running step. <code class="docutils literal notranslate"><span class="pre">airflow-nomad</span></code> keeps those roles
-separate: Airflow determines when the work belongs in a DAG run; Nomad chooses
-nodes, starts allocations, applies resource limits, and records runtime state.</p>
-<section id="lifecycle-mapping">
-<h2>Lifecycle mapping<a class="headerlink" href="#lifecycle-mapping" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#lifecycle-mapping'">¶</a></h2>
-<p>The integration registers a Nomad jobspec and polls the status bundle returned
-by <code class="docutils literal notranslate"><span class="pre">nomad</span> <span class="pre">job</span> <span class="pre">status</span> <span class="pre">-json</span></code>. Successful terminal allocations stop monitoring.
-Pending or running allocations continue monitoring. Failed or lost current
-allocations enter the <code class="docutils literal notranslate"><span class="pre">airflow-ha</span></code> retrigger path.</p>
-<p>This mapping uses current job-version allocations rather than Nomad’s coarse
-job status. Nomad reports both successfully completed and failed batch jobs as
-<code class="docutils literal notranslate"><span class="pre">dead</span></code>; the allocation records preserve the distinction Airflow needs.</p>
+<p>Airflow coordinates workflows; Nomad schedules and supervises the processes
+that perform one step. <code class="docutils literal notranslate"><span class="pre">airflow-nomad</span></code> submits jobs within an Airflow DAG run
+and monitors the allocations Nomad creates. Nomad retains responsibility for
+placement, resource isolation, and task execution on its client nodes.</p>
+<section id="why-allocations-determine-completion">
+<h2>Why allocations determine completion<a class="headerlink" href="#why-allocations-determine-completion" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#why-allocations-determine-completion'">¶</a></h2>
+<p>Nomad reports both successfully completed and failed batch jobs as <code class="docutils literal notranslate"><span class="pre">dead</span></code>.
+The job’s coarse status therefore cannot tell Airflow whether the work succeeded.
+The integration uses the allocation records from <code class="docutils literal notranslate"><span class="pre">nomad</span> <span class="pre">job</span> <span class="pre">status</span> <span class="pre">-json</span></code>,
+filtering to the newest allocation job version and allocations still desired
+as <code class="docutils literal notranslate"><span class="pre">run</span></code>.</p>
+<p>Successful terminal allocations stop monitoring. Queued, starting, or running
+work continues. Failed or lost current allocations take the <code class="docutils literal notranslate"><span class="pre">airflow-ha</span></code>
+retrigger path once no work is still running. Older allocations remain useful
+as history, but do not determine completion of the current job version.</p>
 </section>
-<section id="why-the-integration-uses-the-nomad-cli">
-<h2>Why the integration uses the Nomad CLI<a class="headerlink" href="#why-the-integration-uses-the-nomad-cli" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#why-the-integration-uses-the-nomad-cli'">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">nomad-pydantic</span></code> renders the native JSON jobspec and delegates lifecycle calls
-to the Nomad CLI. This keeps address, namespace, TLS, and token handling aligned
-with an operator’s existing Nomad configuration. It also makes the client easy
-to replace with a fake command runner in tests.</p>
-<p>Unlike <code class="docutils literal notranslate"><span class="pre">airflow-systemd</span></code>, this integration does not need a separate SSH mode.
-The CLI already talks to a remote Nomad API, so workers only need network access
-and credentials for the target cluster.</p>
+<section id="why-a-remote-cluster-does-not-need-ssh">
+<h2>Why a remote cluster does not need SSH<a class="headerlink" href="#why-a-remote-cluster-does-not-need-ssh" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#why-a-remote-cluster-does-not-need-ssh'">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">nomad-pydantic</span></code> renders a native JSON jobspec and calls the installed Nomad
+CLI. That CLI already talks to a remote HTTP API. Airflow workers need the
+CLI, network access, and cluster credentials; they do not need a shell on a
+Nomad server or client node.</p>
+<p>The generated jobspec belongs to the Airflow worker filesystem. The scheduled
+command belongs to the Nomad allocation’s environment. Shared artifact storage
+allows several Airflow workers to reach the same jobspec while Nomad independently
+chooses where to execute the workload. Credentials and explicit namespaces keep
+successive lifecycle tasks directed at the same cluster and job.</p>
 </section>
-<section id="comparison-with-host-process-managers">
-<h2>Comparison with host process managers<a class="headerlink" href="#comparison-with-host-process-managers" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#comparison-with-host-process-managers'">¶</a></h2>
+<section id="why-finite-jobs-and-persistent-services-need-different-limits">
+<h2>Why finite jobs and persistent services need different limits<a class="headerlink" href="#why-finite-jobs-and-persistent-services-need-different-limits" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#why-finite-jobs-and-persistent-services-need-different-limits'">¶</a></h2>
+<p>A batch job can finish and give Airflow a terminal allocation state. A service
+usually continues running, so its Airflow monitoring window needs a runtime or
+end-time condition. The service can remain active between runs when stop and
+cleanup are disabled.</p>
+<p>Nomad’s restart and reschedule policies can recover tasks between Airflow
+checks and DAG runs. Airflow retriggers coordinate failed work with the larger
+workflow. These policies apply at different levels: Nomad can recover an
+allocation without creating a new Airflow run, while Airflow can restart the
+registered job as part of its retrigger path.</p>
+<p>Airflow’s schedule determines when to register and monitor the job. Adding a
+Nomad periodic schedule gives Nomad separate control over child job creation.
+The current monitor follows the configured job ID, rather than aggregating
+periodic child jobs, so directly registered finite jobs provide a clearer
+completion boundary for an Airflow run.</p>
+</section>
+<section id="why-cleanup-has-two-owners">
+<h2>Why cleanup has two owners<a class="headerlink" href="#why-cleanup-has-two-owners" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#why-cleanup-has-two-owners'">¶</a></h2>
+<p>Airflow cleanup removes the local JSON jobspec and removes its directory if
+empty. Nomad owns job history and allocation data separately. A normal stop
+deregisters the job without purging its history; <code class="docutils literal notranslate"><span class="pre">purge_on_exit</span></code> requests a purge.
+Logs and allocation files remain subject to Nomad’s retention and garbage
+collection.</p>
+<p>Stop and cleanup are on the successful monitoring path. A failed registration,
+failed monitoring task, or cancelled run can leave artifacts or a running job.
+Explicit operational cleanup is therefore separate from ordinary successful
+completion. Downstream dependencies use the cleanup task as their boundary;
+disabling it also changes the task state downstream operators observe.</p>
+</section>
+<section id="python-and-yaml-describe-the-same-lifecycle">
+<h2>Python and YAML describe the same lifecycle<a class="headerlink" href="#python-and-yaml-describe-the-same-lifecycle" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#python-and-yaml-describe-the-same-lifecycle'">¶</a></h2>
+<p>Inline Python constructs <code class="docutils literal notranslate"><span class="pre">Nomad</span></code> with a typed configuration beside other Airflow
+code. <code class="docutils literal notranslate"><span class="pre">airflow-config</span></code> loads a <code class="docutils literal notranslate"><span class="pre">NomadTask</span></code> from YAML and constructs the same
+lifecycle class. Hydra composition changes how configuration is assembled,
+while cluster selection and allocation monitoring remain the same.</p>
+<p>Both forms generate task IDs from the DAG ID and allow one Nomad lifecycle per
+DAG. Several Nomad tasks or task groups belong within that lifecycle’s job. This
+matches the integration’s single active run and single-task concurrency limits.</p>
+</section>
+<section id="nomad-and-host-process-managers">
+<h2>Nomad and host process managers<a class="headerlink" href="#nomad-and-host-process-managers" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#nomad-and-host-process-managers'">¶</a></h2>
 <p><a class="reference external" href="https://github.com/airflow-laminar/airflow-supervisor">airflow-supervisor</a>
-creates a dedicated supervisord instance, while
-<a class="reference external" href="https://github.com/airflow-laminar/airflow-systemd">airflow-systemd</a> uses a
-host’s service manager. <code class="docutils literal notranslate"><span class="pre">airflow-nomad</span></code> targets a cluster scheduler, making it a
-better fit when placement, multi-node capacity, resource isolation, and Nomad
-service integrations are already operational standards.</p>
+creates a dedicated supervisord instance.
+<a class="reference external" href="https://github.com/airflow-laminar/airflow-systemd">airflow-systemd</a> manages units
+on a host’s existing service manager. Nomad adds cluster placement and allocation
+history. It fits workflows whose runtime already depends on multiple client
+nodes, resource scheduling, and Nomad deployment policies.</p>
 </section>
 </section>
 </div></div><aside class="hidden text-sm xl:block" id="right-sidebar">
 <div class="sticky top-16 -mt-10 max-h-[calc(100vh-5rem)] h-full overflow-y-auto pt-6 space-y-2"><p class="font-medium">On this page</p>
 <ul>
-<li><a :data-current="activeSection === '#lifecycle-mapping'" class="reference internal" href="#lifecycle-mapping">Lifecycle mapping</a></li>
-<li><a :data-current="activeSection === '#why-the-integration-uses-the-nomad-cli'" class="reference internal" href="#why-the-integration-uses-the-nomad-cli">Why the integration uses the Nomad CLI</a></li>
-<li><a :data-current="activeSection === '#comparison-with-host-process-managers'" class="reference internal" href="#comparison-with-host-process-managers">Comparison with host process managers</a></li>
+<li><a :data-current="activeSection === '#why-allocations-determine-completion'" class="reference internal" href="#why-allocations-determine-completion">Why allocations determine completion</a></li>
+<li><a :data-current="activeSection === '#why-a-remote-cluster-does-not-need-ssh'" class="reference internal" href="#why-a-remote-cluster-does-not-need-ssh">Why a remote cluster does not need SSH</a></li>
+<li><a :data-current="activeSection === '#why-finite-jobs-and-persistent-services-need-different-limits'" class="reference internal" href="#why-finite-jobs-and-persistent-services-need-different-limits">Why finite jobs and persistent services need different limits</a></li>
+<li><a :data-current="activeSection === '#why-cleanup-has-two-owners'" class="reference internal" href="#why-cleanup-has-two-owners">Why cleanup has two owners</a></li>
+<li><a :data-current="activeSection === '#python-and-yaml-describe-the-same-lifecycle'" class="reference internal" href="#python-and-yaml-describe-the-same-lifecycle">Python and YAML describe the same lifecycle</a></li>
+<li><a :data-current="activeSection === '#nomad-and-host-process-managers'" class="reference internal" href="#nomad-and-host-process-managers">Nomad and host process managers</a></li>
 </ul>
 </div>
 </aside>
