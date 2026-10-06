@@ -21,9 +21,9 @@
 <meta content="#ffffff" media="(prefers-color-scheme: light)" name="theme-color"/>
 <meta content="#030711" media="(prefers-color-scheme: dark)" name="theme-color"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>airflow_nomad.NomadTaskArgs | airflow-nomad v0.2.0</title>
-<meta content="airflow_nomad.NomadTaskArgs | airflow-nomad v0.2.0" property="og:title"/>
-<meta content="airflow_nomad.NomadTaskArgs | airflow-nomad v0.2.0" name="twitter:title"/>
+<title>airflow_nomad.check_nomad_health | airflow-nomad v0.2.0</title>
+<meta content="airflow_nomad.check_nomad_health | airflow-nomad v0.2.0" property="og:title"/>
+<meta content="airflow_nomad.check_nomad_health | airflow-nomad v0.2.0" name="twitter:title"/>
 <link href="../../../_static/pygments.css?v=03e43079" rel="stylesheet" type="text/css"/>
 <link href="../../../_static/theme.css?v=d6d7c91b" rel="stylesheet" type="text/css"/>
 <link href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" rel="stylesheet" type="text/css"/>
@@ -37,8 +37,7 @@
 <link href="../../../_static/awesome-myst-nb.css?v=7c7ea10c" rel="stylesheet" type="text/css"/>
 <link href="../../../search.html" rel="search" title="Search"/>
 <link href="../../../genindex.html" rel="index" title="Index"/>
-<link href="airflow_nomad.NomadTask.html" rel="next" title="airflow_nomad.NomadTask"/>
-<link href="airflow_nomad.NomadAirflowConfiguration.html" rel="prev" title="airflow_nomad.NomadAirflowConfiguration"/>
+<link href="airflow_nomad.Nomad.html" rel="prev" title="airflow_nomad.Nomad"/>
 </head>
 <body :class="{ 'overflow-hidden': showSidebar }" class="min-h-screen font-sans antialiased bg-background text-foreground" x-data="{ showSidebar: false, showScrollTop: false }">
 <div @click.self="showSidebar = false" class="fixed inset-0 z-50 overflow-hidden bg-background/80 backdrop-blur-sm md:hidden" x-cloak="" x-show="showSidebar"></div><div class="relative flex flex-col min-h-screen" id="page"><a class="absolute top-0 left-0 z-[100] block bg-background p-4 text-xl transition -translate-x-full opacity-0 focus:translate-x-0 focus:opacity-100" href="#content">
@@ -86,13 +85,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../explanation.html">Why Airflow owns the Nomad job lifecycle</a></li>
 <li class="toctree-l1 current" x-data="{ expanded: $el.classList.contains('current') ? true : false }"><a :class="{ 'expanded' : expanded }" @click="expanded = !expanded" class="reference internal expandable" href="../api.html">API reference<button @click.prevent.stop="expanded = !expanded" type="button" x-cloak=""><span class="sr-only"></span><svg fill="currentColor" height="18px" stroke="none" viewbox="0 0 24 24" width="18px" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg></button></a><ul class="current" x-show="expanded">
 <li class="toctree-l2"><a class="reference internal" href="airflow_nomad.NomadAirflowConfiguration.html">airflow_nomad.NomadAirflowConfiguration</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">airflow_nomad.NomadTaskArgs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="airflow_nomad.NomadTaskArgs.html">airflow_nomad.NomadTaskArgs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="airflow_nomad.NomadTask.html">airflow_nomad.NomadTask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="airflow_nomad.NomadOperatorArgs.html">airflow_nomad.NomadOperatorArgs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="airflow_nomad.NomadOperator.html">airflow_nomad.NomadOperator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="airflow_nomad.load_airflow_config.html">airflow_nomad.load_airflow_config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="airflow_nomad.Nomad.html">airflow_nomad.Nomad</a></li>
-<li class="toctree-l2"><a class="reference internal" href="airflow_nomad.check_nomad_health.html">airflow_nomad.check_nomad_health</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">airflow_nomad.check_nomad_health</a></li>
 </ul>
 </li>
 </ul>
@@ -115,28 +114,23 @@
 </svg>
 </a>
 <div class="mr-1">/</div><a class="hover:text-foreground overflow-hidden text-ellipsis whitespace-nowrap" href="../api.html">API reference</a>
-<div class="mr-1">/</div><span aria-current="page" class="font-medium text-foreground overflow-hidden text-ellipsis whitespace-nowrap">airflow_nomad.NomadTaskArgs</span>
+<div class="mr-1">/</div><span aria-current="page" class="font-medium text-foreground overflow-hidden text-ellipsis whitespace-nowrap">airflow_nomad.check_nomad_health</span>
 </nav>
 <div id="content" role="main">
-<section id="airflow-nomad-nomadtaskargs">
-<h1>airflow_nomad.NomadTaskArgs<a class="headerlink" href="#airflow-nomad-nomadtaskargs" title="Link to this heading">¶</a></h1>
-<dl class="py class pydantic_model">
-<dt class="sig sig-object py" id="airflow_nomad.NomadTaskArgs">
-<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">airflow_nomad.</span></span><span class="sig-name descname"><span class="pre">NomadTaskArgs</span></span><a class="reference internal" href="../../../_modules/airflow_nomad/task.html#NomadTaskArgs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airflow_nomad.NomadTaskArgs" title="Link to this definition" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#airflow_nomad.NomadTaskArgs'">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TaskArgs</span></code></p>
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="airflow_nomad.NomadTaskArgs.cfg">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cfg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="airflow_nomad.NomadAirflowConfiguration.html#airflow_nomad.NomadAirflowConfiguration" title="airflow_nomad.config.NomadAirflowConfiguration"><span class="pre">NomadAirflowConfiguration</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#airflow_nomad.NomadTaskArgs.cfg" title="Link to this definition" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#airflow_nomad.NomadTaskArgs.cfg'">¶</a></dt>
-<dd></dd></dl>
+<section id="airflow-nomad-check-nomad-health">
+<h1>airflow_nomad.check_nomad_health<a class="headerlink" href="#airflow-nomad-check-nomad-health" title="Link to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="airflow_nomad.check_nomad_health">
+<span class="sig-prename descclassname"><span class="pre">airflow_nomad.</span></span><span class="sig-name descname"><span class="pre">check_nomad_health</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="airflow_nomad.NomadAirflowConfiguration.html#airflow_nomad.NomadAirflowConfiguration" title="airflow_nomad.config.NomadAirflowConfiguration"><span class="pre">NomadAirflowConfiguration</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">nomad_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NomadClient</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">require_running</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/airflow_nomad/airflow.html#check_nomad_health"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airflow_nomad.check_nomad_health" title="Link to this definition" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#airflow_nomad.check_nomad_health'">¶</a></dt>
+<dd><p>Check an existing job once, requiring a running service by default.</p>
+<p>Use this callable in a scheduled PythonOperator to monitor persistent jobs.
+Airflow task XComs retain byte cursors across scheduled health checks.</p>
 </dd></dl>
 </section>
 </div></div><aside class="hidden text-sm xl:block" id="right-sidebar">
 <div class="sticky top-16 -mt-10 max-h-[calc(100vh-5rem)] h-full overflow-y-auto pt-6 space-y-2"><p class="font-medium">On this page</p>
 <ul>
-<li><a :data-current="activeSection === '#airflow_nomad.NomadTaskArgs'" class="reference internal" href="#airflow_nomad.NomadTaskArgs"><code class="docutils literal notranslate"><span class="pre">NomadTaskArgs</span></code></a><ul>
-<li><a :data-current="activeSection === '#airflow_nomad.NomadTaskArgs.cfg'" class="reference internal" href="#airflow_nomad.NomadTaskArgs.cfg"><code class="docutils literal notranslate"><span class="pre">NomadTaskArgs.cfg</span></code></a></li>
-</ul>
-</li>
+<li><a :data-current="activeSection === '#airflow_nomad.check_nomad_health'" class="reference internal" href="#airflow_nomad.check_nomad_health"><code class="docutils literal notranslate"><span class="pre">check_nomad_health()</span></code></a></li>
 </ul>
 </div>
 </aside>

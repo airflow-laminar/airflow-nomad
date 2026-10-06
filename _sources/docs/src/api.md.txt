@@ -16,6 +16,10 @@ describes the native job schema.
 `cfg` accepts a `NomadAirflowConfiguration` or a dictionary validated as that
 model. The optional `nomad_client` keyword supplies a client.
 
+Other keyword arguments, including `on_failure_callback` and retries, apply to
+the generated operators. Lifecycle command failures raise `AirflowException`.
+Failed allocation diagnostics include task state, exit code, signal, and events.
+
 `NomadTaskArgs` contains `cfg` and inherited Airflow task arguments.
 `NomadTask.operator` defaults to `airflow_nomad.Nomad` and rejects other
 operators. `NomadOperator` and `NomadOperatorArgs` alias `NomadTask` and
@@ -94,6 +98,44 @@ its normal parent is a skipped task.
 Hydra YAML into a single job configuration. `airflow_config.load_config` loads
 collections of declarative DAGs. The [how-to guides](how-to.md) cover the latter.
 
+### Log forwarding fields
+
+| Field            | Default | Meaning                                                         |
+| ---------------- | ------- | --------------------------------------------------------------- |
+| `forward_logs`   | `False` | Forwards allocation task stdout and stderr into Airflow logs.   |
+| `log_chunk_size` | `65536` | Maximum bytes per stream per read; range `1` through `1048576`. |
+
+Forwarding reads allocations from the newest job version. Streams are tagged
+with allocation ID, task name, and stream. Disabled Nomad task logs are omitted.
+Each status check reads at most one chunk per stream; restart, stop, and purge
+drain at most sixteen chunks per stream. Read errors warn without changing the
+job's health result. Split UTF-8 characters can appear as replacement characters;
+cursors advance by the original byte count.
+
+`nomad_log_offsets` XComs contain byte offsets indexed by allocation, task,
+stream, and log file. Lifecycle tasks share cursors within a DAG run. Scheduled
+health tasks read their own prior-run cursors, including failed checks.
+
+## Health callable
+
+`check_nomad_health(cfg, *, nomad_client=None, require_running=True, **context)`
+checks an existing job without registering, restarting, or stopping it. `cfg`
+accepts a `NomadAirflowConfiguration` or a configuration dictionary.
+
+The default requires a current running allocation. Failed or lost allocations,
+failed task states, stopped jobs, and jobs without allocations raise
+`AirflowException`. With `require_running=False`, successfully completed batch
+jobs can pass. Client status errors propagate to the caller. Enabled forwarding
+reads logs before health failure is raised and saves cursors when a task instance
+is present.
+
+The returned dictionary contains `job_id`, `namespace`, `running`, `complete`,
+and `allocations`, a list of current allocation IDs. Direct calls without a
+task instance retain no cursor between calls.
+
+The [observability guide](observability.md) covers Python and `airflow-config`
+configuration, permissions, alert callbacks, and serialized watchdog runs.
+
 ## Generated API
 
 ```{eval-rst}
@@ -109,4 +151,5 @@ collections of declarative DAGs. The [how-to guides](how-to.md) cover the latter
    NomadOperator
    load_airflow_config
    Nomad
+   check_nomad_health
 ```

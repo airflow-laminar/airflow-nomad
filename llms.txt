@@ -17,6 +17,7 @@
 - [airflow_nomad.NomadOperator](docs/src/_build/airflow_nomad.NomadOperator.html.md): alias of NomadTask
 - [airflow_nomad.load_airflow_config](docs/src/_build/airflow_nomad.load_airflow_config.html.md): Compose a Hydra YAML configuration and validate it.
 - [airflow_nomad.Nomad](docs/src/_build/airflow_nomad.Nomad.html.md): Bases: object
+- [airflow_nomad.check_nomad_health](docs/src/_build/airflow_nomad.check_nomad_health.html.md): Check an existing job once, requiring a running service by default.
 
 ## Full documentation
 

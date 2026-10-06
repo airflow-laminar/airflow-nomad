@@ -23,9 +23,9 @@
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#030711" />
   
-  <title>airflow_nomad.airflow | airflow-nomad v0.1.0</title>
-  <meta property="og:title" content="airflow_nomad.airflow | airflow-nomad v0.1.0" />
-  <meta name="twitter:title" content="airflow_nomad.airflow | airflow-nomad v0.1.0" />
+  <title>airflow_nomad.airflow | airflow-nomad v0.2.0</title>
+  <meta property="og:title" content="airflow_nomad.airflow | airflow-nomad v0.2.0" />
+  <meta name="twitter:title" content="airflow_nomad.airflow | airflow-nomad v0.2.0" />
   <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
   <link rel="stylesheet" type="text/css" href="../../_static/theme.css?v=d6d7c91b" />
   <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -50,7 +50,7 @@
       Skip to content
     </a><header class="sticky top-0 z-40 w-full border-b shadow-xs border-border bg-background/90 backdrop-blur"><div class="container flex items-center h-14">
     <div class="hidden mr-4 md:flex">
-      <a href="../../index.html" class="flex items-center mr-6"><span class="hidden font-bold sm:inline-block text-clip whitespace-nowrap">airflow-nomad <code style='font-size: var(--font-size--small--4);color: var(--sd-color-primary);'>v0.1.0</code></span>
+      <a href="../../index.html" class="flex items-center mr-6"><span class="hidden font-bold sm:inline-block text-clip whitespace-nowrap">airflow-nomad <code style='font-size: var(--font-size--small--4);color: var(--sd-color-primary);'>v0.2.0</code></span>
       </a></div><button
       class="inline-flex items-center justify-center h-10 px-0 py-2 mr-2 text-base font-medium transition-colors rounded-md hover:text-accent-foreground hover:bg-transparent md:hidden"
       type="button" @click="showSidebar = true">
@@ -106,7 +106,7 @@
   class="fixed inset-y-0 left-0 md:top-14 z-50 md:z-30 bg-background md:bg-transparent transition-all duration-100 -translate-x-full md:translate-x-0 ml-0 p-6 md:p-0 md:-ml-2 md:h-[calc(100vh-3.5rem)] w-5/6 md:w-full overflow-y-auto border-r border-border md:sticky"
   :aria-hidden="!showSidebar" :class="{ 'translate-x-0': showSidebar }">
 
-    <a href="../../index.html" class="justify-start text-sm md:!hidden bg-background"><span class="font-bold text-clip whitespace-nowrap">airflow-nomad <code style='font-size: var(--font-size--small--4);color: var(--sd-color-primary);'>v0.1.0</code></span>
+    <a href="../../index.html" class="justify-start text-sm md:!hidden bg-background"><span class="font-bold text-clip whitespace-nowrap">airflow-nomad <code style='font-size: var(--font-size--small--4);color: var(--sd-color-primary);'>v0.2.0</code></span>
     </a>
 
     <div class="relative overflow-hidden md:overflow-auto my-4 md:my-0">
@@ -124,6 +124,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../docs/src/_build/airflow_nomad.NomadOperator.html">airflow_nomad.NomadOperator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../docs/src/_build/airflow_nomad.load_airflow_config.html">airflow_nomad.load_airflow_config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../docs/src/_build/airflow_nomad.Nomad.html">airflow_nomad.Nomad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../docs/src/_build/airflow_nomad.check_nomad_health.html">airflow_nomad.check_nomad_health</a></li>
 </ul>
 </li>
 </ul>
@@ -146,7 +147,7 @@
      class="flex items-center mb-4 space-x-1 text-sm text-muted-foreground">
   <a class="overflow-hidden text-ellipsis whitespace-nowrap hover:text-foreground"
      href="../../index.html">
-    <span class="hidden md:inline">airflow-nomad <code style='font-size: var(--font-size--small--4);color: var(--sd-color-primary);'>v0.1.0</code></span>
+    <span class="hidden md:inline">airflow-nomad <code style='font-size: var(--font-size--small--4);color: var(--sd-color-primary);'>v0.2.0</code></span>
     <svg xmlns="http://www.w3.org/2000/svg"
          height="18"
          width="18"
@@ -536,6 +537,8 @@
 
 </span><span id="line-361">
 </span><span id="line-362">
+<div class="viewcode-block" id="check_nomad_health">
+<a class="viewcode-back" href="../../docs/src/_build/airflow_nomad.check_nomad_health.html#airflow_nomad.check_nomad_health">[docs]</a>
 </span><span id="line-363"><span class="k">def</span><span class="w"> </span><span class="nf">check_nomad_health</span><span class="p">(</span>
 </span><span id="line-364">    <span class="n">cfg</span><span class="p">:</span> <span class="n">NomadAirflowConfiguration</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">nomad_client</span><span class="p">:</span> <span class="n">NomadClient</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">require_running</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">context</span><span class="p">:</span> <span class="n">Any</span>
 </span><span id="line-365"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
@@ -591,7 +594,8 @@
 </span><span id="line-415">        <span class="s2">"running"</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">running</span><span class="p">,</span>
 </span><span id="line-416">        <span class="s2">"complete"</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">complete</span><span class="p">,</span>
 </span><span id="line-417">        <span class="s2">"allocations"</span><span class="p">:</span> <span class="p">[</span><span class="n">allocation</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">allocation</span> <span class="ow">in</span> <span class="n">status</span><span class="o">.</span><span class="n">current_allocations</span><span class="p">],</span>
-</span><span id="line-418">    <span class="p">}</span>
+</span><span id="line-418">    <span class="p">}</span></div>
+
 </span></code></pre></div>
     </div></div>
           </main>
@@ -607,7 +611,7 @@
 </footer>
     </div>
     
-    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/documentation_options.js?v=938c9ccc"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>

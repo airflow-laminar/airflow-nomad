@@ -1,0 +1,6 @@
+﻿airflow\_nomad.check\_nomad\_health
+===================================
+
+.. currentmodule:: airflow_nomad
+
+.. autofunction:: check_nomad_health
