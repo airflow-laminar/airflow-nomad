@@ -8,18 +8,28 @@ Run and monitor Nomad-managed jobs from Apache Airflow.
 [![PyPI](https://img.shields.io/pypi/v/airflow-nomad.svg)](https://pypi.python.org/pypi/airflow-nomad)
 
 ```python
+from datetime import datetime, timezone
+
 from airflow import DAG
 from airflow_nomad import Job, Nomad, NomadAirflowConfiguration, Task, TaskGroup
 
-dag = DAG(dag_id="nightly-nomad", schedule="@daily")
+dag = DAG(
+    dag_id="nightly-nomad",
+    schedule="@daily",
+    start_date=datetime(2025, 1, 1, tzinfo=timezone.utc),
+    catchup=False,
+)
 config = NomadAirflowConfiguration(
+    working_dir="/var/tmp/nightly-nomad",
     job=Job(
-        id="nightly",
+        id="airflow-nightly",
         type="batch",
+        namespace="default",
+        datacenters=["dc1"],
         task_groups=[
             TaskGroup(
                 name="nightly",
-                tasks=[Task(name="nightly", driver="exec", config={"command": "/opt/jobs/nightly"})],
+                tasks=[Task(name="nightly", driver="exec", config={"command": "/bin/sleep", "args": ["5"]})],
             )
         ],
     )
@@ -29,14 +39,21 @@ Nomad(dag=dag, cfg=config)
 
 The generated task lifecycle writes and registers the jobspec, monitors current
 allocations with `airflow-ha`, handles retriggers, stops the job, and optionally
-removes the generated configuration.
+removes the generated configuration on successful completion. Workers use the
+Nomad CLI to reach local or remote clusters through their HTTP API. Define the
+same lifecycle in inline Python or `airflow-config` YAML.
 
 ## Documentation
 
-- [Tutorial: run a Nomad job from Airflow](docs/src/tutorial.md)
-- [How-to guides](docs/src/how-to.md)
-- [Why Airflow owns the lifecycle](docs/src/explanation.md)
-- [API reference](docs/src/api.md)
+Start with the [tutorial](docs/src/tutorial.md) to run a short batch job on a
+development cluster and check cleanup. For an existing cluster, follow the
+[Python](docs/src/how-to.md#how-to-run-a-job-in-python) or
+[`airflow-config` guide](docs/src/how-to.md#how-to-run-a-job-with-airflow-config).
+Both use the same cluster credentials and namespace settings.
+
+The [API reference](docs/src/api.md) lists configuration defaults, monitoring
+settings, and task boundaries. [Why Airflow owns the lifecycle](docs/src/explanation.md)
+explains allocation state, persistent services, and scheduling ownership.
 
 Published documentation is available at
 [airflow-laminar.github.io/airflow-nomad](https://airflow-laminar.github.io/airflow-nomad/).
