@@ -128,6 +128,9 @@ addopts = [
 ]
 testpaths = "airflow_nomad/tests"
 
+[tool.ty.analysis]
+allowed-unresolved-imports = ["airflow.**"]
+
 [tool.ruff]
 line-length = 150
 
